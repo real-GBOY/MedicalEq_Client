@@ -1,6 +1,7 @@
 /** @format */
 
 export interface Product {
+<<<<<<< HEAD
 	id: number;
 	name: string;
 	description: string;
@@ -18,6 +19,16 @@ export interface Product {
 	shipping: string;
 	warranty: string;
 	certifications: string[];
+=======
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  category: string;
+  price?: number;
+  rating?: number;
+  features?: string[];
+>>>>>>> 6ad121e75c49e9dc220e380cf7563d682cc0642f
 }
 
 export interface ContactForm {
