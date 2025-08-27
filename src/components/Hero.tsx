@@ -1,14 +1,21 @@
 /** @format */
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Shield, Award, Users } from "lucide-react";
+import { scrollVariants, hoverVariants, useScrollAnimation } from "../utils/scrollAnimations";
 
 const Hero: React.FC = () => {
+	const { scrollYProgress } = useScroll();
+	const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
+	const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+	const y = useTransform(scrollYProgress, [0, 0.5], [0, -50]);
+
 	return (
-		<section
+		<motion.section
 			id='home'
-			className='relative min-h-screen bg-[#00796a] overflow-hidden'>
+			style={{ opacity, scale, y }}
+			className='relative min-h-screen py-20 bg-[#00796a] overflow-hidden'>
 			{/* Enhanced Medical Equipment Background Textures */}
 			<div className='absolute inset-0 -z-20 opacity-25'>
 				{/* Medical Crosses Pattern */}
@@ -92,7 +99,7 @@ const Hero: React.FC = () => {
 			</div>
 
 			{/* New Enhanced Textures Layer */}
-			<div className='absolute inset-0 -z-15 opacity-30'>
+			<div className='absolute inset-0 top-20 -z-15 opacity-30'>
 				{/* Animated Dots Grid */}
 				{Array.from({ length: 12 }).map((_, i) => (
 					<motion.div
@@ -322,37 +329,34 @@ const Hero: React.FC = () => {
 			</div>
 
 			<div className='container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-24'>
-				<div className='grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 items-center min-h-[70vh] sm:min-h-[75vh] lg:min-h-[85vh]'>
+				<motion.div 
+					variants={scrollVariants.slideUpStagger}
+					initial="hidden"
+					whileInView="visible"
+					viewport={{ once: true }}
+					className='grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 items-center min-h-[70vh] sm:min-h-[75vh] lg:min-h-[85vh]'>
 					{/* Left Side - Content */}
 					<motion.div
-						initial={{ opacity: 0, x: -50 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.8, delay: 0.2 }}
+						variants={scrollVariants.slideUpItem}
 						className='text-white text-center lg:text-left order-2 lg:order-1 lg:col-span-2'>
 						<motion.h1
-							className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6'
-							initial={{ opacity: 0, y: 30 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8, delay: 0.4 }}>
+							variants={scrollVariants.textReveal}
+							className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6'>
 							Advanced Medical
 							<span className='block text-yellow-300'>Equipment</span>
 							for Healthcare Excellence
 						</motion.h1>
 
 						<motion.p
-							className='text-base sm:text-lg lg:text-xl text-teal-100 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0'
-							initial={{ opacity: 0, y: 30 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8, delay: 0.6 }}>
+							variants={scrollVariants.textReveal}
+							className='text-base sm:text-lg lg:text-xl text-teal-100 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0'>
 							Empowering healthcare professionals with state-of-the-art medical
 							equipment and innovative solutions for better patient outcomes.
 						</motion.p>
 
 						<motion.div
-							className='flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12 justify-center lg:justify-start'
-							initial={{ opacity: 0, y: 30 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8, delay: 0.8 }}>
+							variants={scrollVariants.slideUpItem}
+							className='flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12 justify-center lg:justify-start'>
 							<motion.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
@@ -380,10 +384,8 @@ const Hero: React.FC = () => {
 
 						{/* Stats */}
 						<motion.div
-							className='grid grid-cols-3 gap-4 sm:gap-6'
-							initial={{ opacity: 0, y: 30 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8, delay: 1.0 }}>
+							variants={scrollVariants.slideUpItem}
+							className='grid grid-cols-3 gap-4 sm:gap-6'>
 							{[
 								{ icon: Shield, value: "15+", label: "Years Experience" },
 								{ icon: Award, value: "500+", label: "Medical Devices" },
@@ -407,40 +409,21 @@ const Hero: React.FC = () => {
 
 					{/* Right Side - Stethoscope Image */}
 					<motion.div
-						initial={{ opacity: 0, x: 50 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.8, delay: 0.4 }}
+						variants={scrollVariants.fadeInRight}
 						className='relative flex justify-center lg:justify-end order-1 lg:order-2 mb-8 lg:mb-0 lg:col-span-1'>
-						{/* Main Visual Container */}
-						<div className='relative'>
-							{/* Stethoscope Image */}
-							<motion.div
-								className='w-80 h-80 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 p-8'
-								animate={{
-									y: [0, -8, 0],
-									scale: [1, 1.02, 1],
-									rotate: [0, 1, -1, 0],
-								}}
-								transition={{
-									duration: 6,
-									repeat: Infinity,
-									ease: "easeInOut",
-								}}>
+													{/* Main Visual Container */}
+							<motion.div 
+								variants={scrollVariants.bounceIn}
+								className='relative'>
+								{/* Stethoscope Image */}
+								<motion.div
+									variants={scrollVariants.floating}
+									className='w-80 h-80 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 p-8'>
 								<motion.img
+									variants={scrollVariants.imageReveal}
 									src='https://i.postimg.cc/Xv8RK0rM/top-view-world-science-day-arrangement-with-stethoscope-removebg-preview.png'
 									alt='Professional Medical Stethoscope'
 									className='w-3/4 h-3/4 object-contain rounded-full shadow-2xl'
-									animate={{
-										y: [0, -5, 0],
-										scale: [1, 1.05, 1],
-										rotate: [0, 0.5, -0.5, 0],
-									}}
-									transition={{
-										duration: 4,
-										repeat: Infinity,
-										ease: "easeInOut",
-										delay: 1,
-									}}
 								/>
 							</motion.div>
 
@@ -499,7 +482,7 @@ const Hero: React.FC = () => {
 									ease: "easeInOut",
 									delay: 1.5,
 								}}></motion.div>
-						</div>
+						</motion.div>
 
 						{/* Background Pattern */}
 						<div className='absolute inset-0 -z-10'>
@@ -545,9 +528,9 @@ const Hero: React.FC = () => {
 								}}></motion.div>
 						</div>
 					</motion.div>
-				</div>
+				</motion.div>
 			</div>
-		</section>
+		</motion.section>
 	);
 };
 
