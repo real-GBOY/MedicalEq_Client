@@ -4,6 +4,9 @@ export interface Product {
   description: string;
   image: string;
   category: string;
+  price?: number;
+  rating?: number;
+  features?: string[];
 }
 
 export interface ContactForm {

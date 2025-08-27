@@ -7,14 +7,17 @@ import WhyChooseUs from './components/WhyChooseUs';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import Login from './components/Login';
+import ProductsPage from './components/ProductsPage';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'login'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'products'>('home');
 
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash === '#login') {
         setCurrentPage('login');
+      } else if (window.location.hash === '#products') {
+        setCurrentPage('products');
       } else {
         setCurrentPage('home');
       }
@@ -53,6 +56,25 @@ function App() {
           transition={pageTransition}
         >
           <Login />
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
+  if (currentPage === 'products') {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="products"
+          initial="initial"
+          animate="in"
+          exit="out"
+          variants={pageVariants}
+          transition={pageTransition}
+        >
+          <Header />
+          <ProductsPage />
+          <Footer />
         </motion.div>
       </AnimatePresence>
     );
