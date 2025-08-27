@@ -95,12 +95,9 @@ const WhyChooseUs: React.FC = () => {
 							whileHover={{ y: -5, scale: 1.02 }}
 							className='bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100'>
 							<div className='text-center'>
-								<motion.div
-									whileHover={{ rotate: 360 }}
-									transition={{ duration: 0.6 }}
-									className='inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-emerald-600 text-white rounded-xl mb-4 shadow-lg'>
+								<div className='inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-emerald-600 text-white rounded-xl mb-4 shadow-lg'>
 									<stat.icon className='h-8 w-8' />
-								</motion.div>
+								</div>
 								<div className='text-3xl lg:text-4xl font-bold text-gray-900 mb-2'>
 									{counters[index]}
 									{stat.suffix}
@@ -125,12 +122,9 @@ const WhyChooseUs: React.FC = () => {
 							whileHover={{ y: -8, scale: 1.02 }}
 							className='bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 group'>
 							<div className='text-center'>
-								<motion.div
-									whileHover={{ rotate: 360 }}
-									transition={{ duration: 0.6 }}
-									className='inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300'>
+								<div className='inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300'>
 									<feature.icon className='h-10 w-10' />
-								</motion.div>
+								</div>
 								<h3 className='text-xl font-semibold text-gray-900 mb-4'>
 									{feature.title}
 								</h3>
