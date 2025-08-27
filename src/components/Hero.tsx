@@ -428,7 +428,7 @@ const Hero: React.FC = () => {
 									className='w-3/4 h-3/4 object-contain rounded-full shadow-2xl'
 								/>
 							</motion.div>
-
+ 
 							{/* Decorative Elements */}
 							<motion.div
 								className='absolute -top-2 -left-2 sm:-top-4 sm:-left-4 w-6 h-6 sm:w-8 sm:h-8 bg-yellow-300 rounded-full opacity-60'
