@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Menu, X, Activity } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 interface HeaderProps {
@@ -25,10 +25,12 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 						className='flex items-center space-x-2'
 						whileHover={{ scale: 1.05 }}>
 						<Link to='/'>
-							<Activity className='h-8 w-8 text-teal-600' />
-							<span className='text-xl font-bold text-gray-900'>
-								MedEquip Pro
-							</span>
+							<img 
+								src="/logo.jpeg" 
+								alt="MedEquip Pro Logo" 
+								className='h-8 w-8 object-cover rounded'
+							/>
+
 						</Link>
 					</motion.div>
 

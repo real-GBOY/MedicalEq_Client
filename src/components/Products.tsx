@@ -169,29 +169,31 @@ const Products: React.FC = () => {
 
 				{/* Enhanced Slider Container - Mobile First */}
 				<div className='relative max-w-7xl mx-auto'>
-					{/* Mobile-Optimized Navigation Arrows */}
-					<motion.button
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
-						onClick={() => paginate(-1)}
-						className='absolute left-1 sm:left-2 md:left-4 lg:left-6 top-1/2 -translate-y-1/2 z-[9999] w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 group touch-manipulation'>
-						<ChevronLeft className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-gray-700 group-hover:text-teal-600 transition-colors' />
-					</motion.button>
-
-					<motion.button
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
-						onClick={() => paginate(1)}
-						className='absolute right-1 sm:right-2 md:right-4 lg:right-6 top-1/2 -translate-y-1/2 z-[9999] w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 group touch-manipulation'>
-						<ChevronRight className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-gray-700 group-hover:text-teal-600 transition-colors' />
-					</motion.button>
-
 					{/* Enhanced Slider with Touch Support */}
 					<div
-						className='relative h-[420px] xs:h-[450px] sm:h-[500px] md:h-[550px] lg:h-[600px] xl:h-[700px] overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg sm:shadow-xl lg:shadow-2xl'
+						className='relative h-[420px] xs:h-[450px] sm:h-[500px] 
+						md:h-[550px] lg:h-[600px] xl:h-[700px] overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg sm:shadow-xl lg:shadow-2xl'
 						onTouchStart={onTouchStart}
 						onTouchMove={onTouchMove}
 						onTouchEnd={onTouchEnd}>
+						
+						{/* Navigation Arrows - Hidden on Mobile, Visible on Larger Screens */}
+						<motion.button
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							onClick={() => paginate(-1)}
+							className='hidden sm:flex absolute left-3 sm:left-4 md:left-5 lg:left-6 top-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-white/95 backdrop-blur-sm rounded-full items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 group touch-manipulation px-1 sm:px-2 md:px-3'>
+							<ChevronLeft className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-gray-700 group-hover:text-teal-600 transition-colors' />
+						</motion.button>
+
+						<motion.button
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							onClick={() => paginate(1)}
+							className='hidden sm:flex absolute right-3 sm:right-4 md:right-5 lg:right-6 top-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-white/95 backdrop-blur-sm rounded-full items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 group touch-manipulation px-1 sm:px-2 md:px-3'>
+							<ChevronRight className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-gray-700 group-hover:text-teal-600 transition-colors' />
+						</motion.button>
+
 						<AnimatePresence initial={false} custom={direction} mode='wait'>
 							<motion.div
 								key={currentIndex}
@@ -205,7 +207,7 @@ const Products: React.FC = () => {
 									opacity: { duration: 0.3 },
 									scale: { duration: 0.4 },
 								}}
-								className='absolute inset-0 z-0'>
+								className='absolute inset-0 z-10'>
 								<div className='relative h-full bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden'>
 									{/* Mobile-First Grid Layout */}
 									<div className='flex flex-col lg:grid lg:grid-cols-2 h-full'>
