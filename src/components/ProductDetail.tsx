@@ -12,7 +12,7 @@ import {
 	Truck,
 	RotateCcw,
 } from "lucide-react";
-import { Product } from "../types";
+import { Product } from "../data/products";
 import { getProductById, getRelatedProducts } from "../utils/productsLoader";
 
 const ProductDetail: React.FC = () => {

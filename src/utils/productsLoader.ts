@@ -1,34 +1,12 @@
 /** @format */
 
-import { ProductsData, Product } from "../types";
+import { Product, ProductsData, productsData } from "../data/products";
 
 // Function to load products data
 export const loadProducts = async (): Promise<ProductsData> => {
 	try {
-		// Try multiple paths for different environments
-		let response;
-		const paths = [
-			"/src/data/products.json",
-			"./data/products.json",
-			"/data/products.json",
-			"data/products.json",
-		];
-
-		for (const path of paths) {
-			try {
-				response = await fetch(path);
-				if (response.ok) break;
-			} catch (e) {
-				continue;
-			}
-		}
-
-		if (!response || !response.ok) {
-			throw new Error("Failed to load products data from all paths");
-		}
-
-		const data: ProductsData = await response.json();
-		return data;
+		// Return data directly from the TypeScript file
+		return productsData;
 	} catch (error) {
 		console.error("Error loading products:", error);
 		// Return fallback data if loading fails

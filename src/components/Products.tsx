@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight, Star, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Product } from "../types";
+import { Product } from "../data/products";
 import { loadProducts } from "../utils/productsLoader";
 
 const Products: React.FC = () => {
@@ -176,7 +176,6 @@ const Products: React.FC = () => {
 						onTouchStart={onTouchStart}
 						onTouchMove={onTouchMove}
 						onTouchEnd={onTouchEnd}>
-						
 						{/* Navigation Arrows - Hidden on Mobile, Visible on Larger Screens */}
 						<motion.button
 							whileHover={{ scale: 1.05 }}

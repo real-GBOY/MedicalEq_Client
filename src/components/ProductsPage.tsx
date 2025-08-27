@@ -12,7 +12,7 @@ import {
 	Eye,
 	ShoppingCart,
 } from "lucide-react";
-import { Product } from "../types";
+import { Product } from "../data/products";
 import { loadProducts } from "../utils/productsLoader";
 
 const ProductsPage: React.FC = () => {
