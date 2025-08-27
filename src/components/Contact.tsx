@@ -1,9 +1,11 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
 import { ContactForm } from "../types";
+import emailjs from "@emailjs/browser";
+import { EMAILJS_CONFIG, initEmailJS } from "../config/emailjs";
 
 const Contact: React.FC = () => {
 	const [form, setForm] = useState<ContactForm>({
@@ -14,22 +16,53 @@ const Contact: React.FC = () => {
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	// Initialize EmailJS
+	useEffect(() => {
+		// Only initialize on client side
+		if (typeof window !== "undefined") {
+			initEmailJS();
+		}
+	}, []);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setIsSubmitting(true);
+		setError(null);
 
-		// Simulate form submission
-		await new Promise((resolve) => setTimeout(resolve, 2000));
+		try {
+			// EmailJS service configuration
+			const templateParams = {
+				from_name: form.name,
+				from_email: form.email,
+				from_phone: form.phone,
+				message: form.message,
+				to_name: "MedEquip Pro Team",
+			};
 
-		setIsSubmitting(false);
-		setIsSubmitted(true);
+			// Send email using EmailJS
+			await emailjs.send(
+				EMAILJS_CONFIG.SERVICE_ID,
+				EMAILJS_CONFIG.TEMPLATE_ID,
+				templateParams
+			);
 
-		// Reset form after success
-		setTimeout(() => {
-			setIsSubmitted(false);
+			setIsSubmitted(true);
 			setForm({ name: "", email: "", phone: "", message: "" });
-		}, 3000);
+
+			// Reset success message after 5 seconds
+			setTimeout(() => {
+				setIsSubmitted(false);
+			}, 5000);
+		} catch (err) {
+			console.error("EmailJS Error:", err);
+			setError(
+				"Failed to send message. Please try again or contact us directly."
+			);
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	const handleChange = (
@@ -202,19 +235,34 @@ const Contact: React.FC = () => {
 									disabled={isSubmitting}
 									whileHover={{ scale: 1.02 }}
 									whileTap={{ scale: 0.98 }}
-									className='w-full bg-teal-600 text-white py-4 rounded-lg font-semibold text-lg flex items-center justify-center space-x-2 hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors'>
-									{isSubmitting ? (
-										<>
-											<div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
-											<span>Sending...</span>
-										</>
-									) : (
-										<>
-											<Send className='h-5 w-5' />
-											<span>Send Message</span>
-										</>
-									)}
+									className='w-full bg-white text-teal-600 py-4 rounded-lg font-semibold text-lg flex items-center justify-center space-x-2 hover:text-white disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed transition-colors relative overflow-hidden group border-2 border-teal-600'>
+									{/* Sliding background effect */}
+									<div className='absolute inset-0 bg-teal-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-1000 ease-in-out'></div>
+
+									{/* Button content with relative positioning */}
+									<div className='relative z-10 flex items-center justify-center space-x-2'>
+										{isSubmitting ? (
+											<>
+												<div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
+												<span>Sending...</span>
+											</>
+										) : (
+											<>
+												<Send className='h-5 w-5' />
+												<span>Send Message</span>
+											</>
+										)}
+									</div>
 								</motion.button>
+
+								{error && (
+									<motion.div
+										initial={{ opacity: 0, y: -10 }}
+										animate={{ opacity: 1, y: 0 }}
+										className='text-red-500 text-center mt-4 p-3 bg-red-50 rounded-lg border border-red-200'>
+										{error}
+									</motion.div>
+								)}
 							</form>
 						)}
 					</motion.div>
