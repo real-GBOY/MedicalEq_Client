@@ -3,7 +3,11 @@
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Shield, Award, Users } from "lucide-react";
-import { scrollVariants, hoverVariants, useScrollAnimation } from "../utils/scrollAnimations";
+import {
+	scrollVariants,
+	hoverVariants,
+	useScrollAnimation,
+} from "../utils/scrollAnimations";
 
 const Hero: React.FC = () => {
 	const { scrollYProgress } = useScroll();
@@ -329,10 +333,10 @@ const Hero: React.FC = () => {
 			</div>
 
 			<div className='container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-24'>
-				<motion.div 
+				<motion.div
 					variants={scrollVariants.slideUpStagger}
-					initial="hidden"
-					whileInView="visible"
+					initial='hidden'
+					whileInView='visible'
 					viewport={{ once: true }}
 					className='grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 items-center min-h-[70vh] sm:min-h-[75vh] lg:min-h-[85vh]'>
 					{/* Left Side - Content */}
@@ -411,14 +415,12 @@ const Hero: React.FC = () => {
 					<motion.div
 						variants={scrollVariants.fadeInRight}
 						className='relative flex justify-center lg:justify-end order-1 lg:order-2 mb-8 lg:mb-0 lg:col-span-1'>
-													{/* Main Visual Container */}
-							<motion.div 
-								variants={scrollVariants.bounceIn}
-								className='relative'>
-								{/* Stethoscope Image */}
-								<motion.div
-									variants={scrollVariants.floating}
-									className='w-80 h-80 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 p-8'>
+						{/* Main Visual Container */}
+						<motion.div variants={scrollVariants.bounceIn} className='relative'>
+							{/* Stethoscope Image */}
+							<motion.div
+								variants={scrollVariants.floating}
+								className='w-80 h-80 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 p-8'>
 								<motion.img
 									variants={scrollVariants.imageReveal}
 									src='https://i.postimg.cc/Xv8RK0rM/top-view-world-science-day-arrangement-with-stethoscope-removebg-preview.png'
