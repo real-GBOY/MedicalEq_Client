@@ -4,49 +4,38 @@ import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight, Star, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Product } from "../data/products";
-import { loadProducts } from "../utils/productsLoader";
+import { Product } from "../types";
+import { useProducts } from "../contexts/ProductsContext";
 
 const Products: React.FC = () => {
 	const navigate = useNavigate();
-	const [products, setProducts] = useState<Product[]>([]);
-	const [loading, setLoading] = useState(true);
+	const { products } = useProducts();
 
+	// All hooks must be called before any conditional returns
+	const [loading, setLoading] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [direction, setDirection] = useState(0);
 	const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 	const [touchStart, setTouchStart] = useState<number | null>(null);
 	const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-	// Load products data
-	useEffect(() => {
-		const fetchProducts = async () => {
-			try {
-				const data = await loadProducts();
-				setProducts(data.products.slice(0, 4)); // Show only first 4 products in slider
-				setLoading(false);
-			} catch (error) {
-				console.error("Error loading products:", error);
-				setLoading(false);
-			}
-		};
-		fetchProducts();
-	}, []);
+	// Get first 4 products for the slider
+	const displayProducts = products.slice(0, 4);
 
 	// Minimum swipe distance (in px)
 	const minSwipeDistance = 50;
 
 	// Auto-advance slider
 	useEffect(() => {
-		if (!isAutoPlaying) return;
+		if (!isAutoPlaying || displayProducts.length === 0) return;
 
 		const timer = setInterval(() => {
 			setDirection(1);
-			setCurrentIndex((prev) => (prev + 1) % products.length);
+			setCurrentIndex((prev) => (prev + 1) % displayProducts.length);
 		}, 6000);
 
 		return () => clearInterval(timer);
-	}, [products.length, isAutoPlaying]);
+	}, [displayProducts.length, isAutoPlaying]);
 
 	const slideVariants = {
 		enter: (direction: number) => ({
@@ -72,12 +61,14 @@ const Products: React.FC = () => {
 		(newDirection: number) => {
 			setDirection(newDirection);
 			setCurrentIndex(
-				(prev) => (prev + newDirection + products.length) % products.length
+				(prev) =>
+					(prev + newDirection + displayProducts.length) %
+					displayProducts.length
 			);
 			setIsAutoPlaying(false);
 			setTimeout(() => setIsAutoPlaying(true), 10000);
 		},
-		[products.length]
+		[displayProducts.length]
 	);
 
 	const goToSlide = useCallback(
@@ -114,7 +105,7 @@ const Products: React.FC = () => {
 		}
 	};
 
-	// Loading state
+	// Now we can have conditional returns after all hooks are called
 	if (loading || products.length === 0) {
 		return (
 			<section
@@ -124,6 +115,26 @@ const Products: React.FC = () => {
 					<div className='text-center py-20'>
 						<div className='animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600 mx-auto mb-4'></div>
 						<p className='text-gray-600'>Loading products...</p>
+					</div>
+				</div>
+			</section>
+		);
+	}
+
+	// Don't render if no products
+	if (displayProducts.length === 0) {
+		return (
+			<section
+				id='products'
+				className='relative py-12 sm:py-16 md:py-20 lg:py-24 xl:py-28 2xl:py-32 overflow-hidden'>
+				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
+					<div className='text-center'>
+						<h2 className='text-2xl font-bold text-gray-900 mb-4'>
+							No Products Available
+						</h2>
+						<p className='text-gray-600'>
+							Products will appear here once they are added.
+						</p>
 					</div>
 				</div>
 			</section>
@@ -215,15 +226,15 @@ const Products: React.FC = () => {
 											{/* Image Container with Better Loading */}
 											<div className='relative w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 group'>
 												<motion.img
-													src={products[currentIndex].image}
-													alt={products[currentIndex].name}
+													src={displayProducts[currentIndex]?.image || ""}
+													alt={displayProducts[currentIndex]?.name || ""}
 													initial={{ scale: 1.05 }}
 													animate={{ scale: 1 }}
 													transition={{ duration: 0.8 }}
 													onError={(e) => {
 														console.error(
 															"Image failed to load:",
-															products[currentIndex].image
+															displayProducts[currentIndex]?.image
 														);
 														e.currentTarget.style.display = "none";
 													}}
@@ -258,7 +269,9 @@ const Products: React.FC = () => {
 												className='absolute top-2 left-2 sm:top-3 sm:left-3 md:top-4 md:left-4 lg:top-6 lg:left-6'>
 												<span className='inline-flex items-center space-x-1 sm:space-x-1.5 md:space-x-2 bg-white/95 backdrop-blur-sm text-gray-800 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 lg:px-5 lg:py-3 rounded-lg sm:rounded-xl md:rounded-2xl font-medium border border-white/20 shadow-lg text-xs sm:text-sm md:text-base'>
 													<Star className='w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-teal-600' />
-													<span>{products[currentIndex].category}</span>
+													<span>
+														{displayProducts[currentIndex]?.category || ""}
+													</span>
 												</span>
 											</motion.div>
 										</div>
@@ -276,7 +289,7 @@ const Products: React.FC = () => {
 													animate={{ opacity: 1, y: 0 }}
 													transition={{ delay: 0.4 }}
 													className='text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-gray-900 mb-2 sm:mb-3 md:mb-4 lg:mb-6 leading-tight'>
-													{products[currentIndex].name}
+													{displayProducts[currentIndex]?.name || ""}
 												</motion.h3>
 
 												{/* Responsive Product Description */}
@@ -285,7 +298,7 @@ const Products: React.FC = () => {
 													animate={{ opacity: 1, y: 0 }}
 													transition={{ delay: 0.5 }}
 													className='text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 mb-3 sm:mb-4 md:mb-6 lg:mb-8 leading-relaxed line-clamp-3 sm:line-clamp-none'>
-													{products[currentIndex].description}
+													{displayProducts[currentIndex]?.description || ""}
 												</motion.p>
 
 												{/* Mobile-Optimized Feature Pills */}
@@ -315,7 +328,9 @@ const Products: React.FC = () => {
 														whileHover={{ scale: 1.02, y: -1 }}
 														whileTap={{ scale: 0.98 }}
 														onClick={() =>
-															navigate(`/product/${products[currentIndex].id}`)
+															navigate(
+																`/product/${displayProducts[currentIndex]?.id}`
+															)
 														}
 														className='inline-flex items-center justify-center space-x-1.5 sm:space-x-2 md:space-x-3 bg-teal-600 text-white px-3 py-2 xs:px-4 xs:py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl font-semibold hover:bg-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl text-xs xs:text-sm sm:text-base touch-manipulation'>
 														<span>Learn More</span>
@@ -339,7 +354,7 @@ const Products: React.FC = () => {
 
 					{/* Mobile-Optimized Dots Indicator */}
 					<div className='flex justify-center mt-4 sm:mt-6 md:mt-8 lg:mt-12 space-x-1.5 sm:space-x-2 md:space-x-3'>
-						{products.map((_, index) => (
+						{displayProducts.map((_, index) => (
 							<motion.button
 								key={index}
 								whileHover={{ scale: 1.1 }}

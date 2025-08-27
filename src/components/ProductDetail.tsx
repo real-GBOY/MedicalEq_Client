@@ -11,43 +11,43 @@ import {
 	Shield,
 	Truck,
 	RotateCcw,
+	Edit,
+	Trash2,
 } from "lucide-react";
-import { Product } from "../data/products";
-import { getProductById, getRelatedProducts } from "../utils/productsLoader";
+import { Product } from "../types";
+import { useProducts } from "../contexts/ProductsContext";
+import EditProductForm from "./EditProductForm";
 
 const ProductDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
+	const { products, getProductById, updateProduct, deleteProduct } =
+		useProducts();
 	const [product, setProduct] = useState<Product | null>(null);
 	const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [selectedImage, setSelectedImage] = useState(0);
+	const [isEditing, setIsEditing] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	// Load product data
 	useEffect(() => {
-		const fetchProduct = async () => {
-			if (!id) return;
+		if (!id) return;
 
-			try {
-				const productData = await getProductById(Number(id));
-				if (productData) {
-					setProduct(productData);
-					// Load related products
-					const related = await getRelatedProducts(
-						productData.category,
-						productData.id
-					);
-					setRelatedProducts(related);
-				}
-				setLoading(false);
-			} catch (error) {
-				console.error("Error loading product:", error);
-				setLoading(false);
-			}
-		};
-
-		fetchProduct();
-	}, [id]);
+		const productData = getProductById(Number(id));
+		if (productData) {
+			setProduct(productData);
+			// Reset selected image to 0 when product changes
+			setSelectedImage(0);
+			// Get related products from the same category
+			const related = products
+				.filter(
+					(p) => p.category === productData.category && p.id !== productData.id
+				)
+				.slice(0, 4);
+			setRelatedProducts(related);
+		}
+	}, [id, getProductById, products]);
 
 	// Loading state
 	if (loading) {
@@ -95,18 +95,43 @@ const ProductDetail: React.FC = () => {
 		// TODO: Implement cart functionality
 	};
 
+	const handleEdit = () => {
+		setIsEditing(true);
+	};
+
+	const handleDelete = async () => {
+		if (!product) return;
+
+		if (
+			window.confirm(
+				`Are you sure you want to delete "${product.name}"? This action cannot be undone.`
+			)
+		) {
+			setIsDeleting(true);
+			try {
+				deleteProduct(product.id);
+				navigate("/products");
+			} catch (error) {
+				console.error("Error deleting product:", error);
+				alert("Error deleting product. Please try again.");
+			} finally {
+				setIsDeleting(false);
+			}
+		}
+	};
+
 	return (
 		<div className='min-h-screen bg-gradient-to-br from-gray-50 to-white'>
 			<div className='container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-6 sm:py-8 lg:py-12 pt-16 sm:pt-20 lg:pt-24'>
 				{/* Back Button */}
 				<motion.div
-					initial={{ opacity: 0, x: -20 }}
-					animate={{ opacity: 1, x: 0 }}
+					initial={{ opacity: 0, y: -20 }}
+					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6 }}
 					className='mb-6 sm:mb-8'>
 					<button
 						onClick={() => navigate(-1)}
-						className='inline-flex items-center space-x-2 bg-white text-gray-700 px-3 sm:px-4 py-2 rounded-lg border border-gray-200 hover:border-teal-300 hover:text-teal-700 transition-colors shadow-sm text-sm sm:text-base'>
+						className='inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors'>
 						<ArrowLeft className='w-4 h-4' />
 						<span>Back</span>
 					</button>
@@ -122,9 +147,13 @@ const ProductDetail: React.FC = () => {
 						{/* Main Image */}
 						<div className='relative overflow-hidden rounded-xl sm:rounded-2xl shadow-xl'>
 							<img
-								src={product.images[selectedImage]}
+								src={product.images[selectedImage] || product.image}
 								alt={product.name}
 								className='w-full h-64 sm:h-80 md:h-96 lg:h-[500px] object-cover transition-transform duration-300 hover:scale-105'
+								onError={(e) => {
+									e.currentTarget.src =
+										"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zMCAzMEg3MFY3MEgzMFYzMFoiIGZpbGw9IiNEMUQ1REIiLz4KPHBhdGggZD0iTTM1IDM1VjY1SDY1VjM1SDM1WiIgZmlsbD0iI0M3Q0ZEMiIvPgo8L3N2Zz4K";
+								}}
 							/>
 							{/* Category Badge */}
 							<div className='absolute top-2 sm:top-4 left-2 sm:left-4'>
@@ -139,24 +168,34 @@ const ProductDetail: React.FC = () => {
 						</div>
 
 						{/* Thumbnail Images */}
-						<div className='grid grid-cols-4 gap-2 sm:gap-4'>
-							{product.images.map((image, index) => (
-								<button
-									key={index}
-									onClick={() => setSelectedImage(index)}
-									className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${
-										selectedImage === index
-											? "border-teal-500 shadow-lg"
-											: "border-gray-200 hover:border-teal-300"
-									}`}>
-									<img
-										src={image}
-										alt={`${product.name} ${index + 1}`}
-										className='w-full h-16 sm:h-20 object-cover'
-									/>
-								</button>
-							))}
-						</div>
+						{product.images && product.images.length > 0 ? (
+							<div className='grid grid-cols-4 gap-2 sm:gap-4'>
+								{product.images.map((image, index) => (
+									<button
+										key={index}
+										onClick={() => setSelectedImage(index)}
+										className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${
+											selectedImage === index
+												? "border-teal-500 shadow-lg"
+												: "border-gray-200 hover:border-teal-300"
+										}`}>
+										<img
+											src={image}
+											alt={`${product.name} ${index + 1}`}
+											className='w-full h-16 sm:h-20 object-cover'
+											onError={(e) => {
+												e.currentTarget.src =
+													"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zMCAzMEg3MFY3MEgzMFYzMFoiIGZpbGw9IiNEMUQ1REIiLz4KPHBhdGggZD0iTTM1IDM1VjY1SDY1VjM1SDM1WiIgZmlsbD0iI0M3Q0ZEMiIvPgo8L3N2Zz4K";
+											}}
+										/>
+									</button>
+								))}
+							</div>
+						) : (
+							<div className='text-center py-4 text-gray-500 text-sm'>
+								No additional images available
+							</div>
+						)}
 					</motion.div>
 
 					{/* Product Info */}
@@ -276,6 +315,23 @@ const ProductDetail: React.FC = () => {
 								<ShoppingCart className='w-4 h-4 sm:w-5 sm:h-5' />
 								<span>{product.inStock ? "Add to Cart" : "Out of Stock"}</span>
 							</button>
+
+							{/* Admin Actions */}
+							<div className='flex gap-3'>
+								<button
+									onClick={handleEdit}
+									className='flex-1 inline-flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl'>
+									<Edit className='w-4 h-4' />
+									<span>Edit Product</span>
+								</button>
+								<button
+									onClick={handleDelete}
+									disabled={isDeleting}
+									className='flex-1 inline-flex items-center justify-center space-x-2 bg-red-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl'>
+									<Trash2 className='w-4 h-4' />
+									<span>{isDeleting ? "Deleting..." : "Delete Product"}</span>
+								</button>
+							</div>
 						</motion.div>
 
 						{/* Additional Info */}
@@ -284,10 +340,14 @@ const ProductDetail: React.FC = () => {
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 1.0 }}
 							className='pt-4 sm:pt-6 lg:pt-8 border-t border-gray-200 space-y-3 sm:space-y-4 lg:space-y-6'>
-							<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6'>
+							<h3 className='text-base sm:text-lg font-semibold text-gray-900'>
+								Additional Information
+							</h3>
+
+							<div className='grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6'>
 								<div className='text-center'>
-									<div className='w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3'>
-										<Truck className='w-6 h-6 text-teal-600' />
+									<div className='w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+										<Truck className='w-6 h-6 text-orange-600' />
 									</div>
 									<h4 className='font-semibold text-gray-900 mb-1'>Shipping</h4>
 									<p className='text-sm text-gray-600'>{product.shipping}</p>
@@ -383,6 +443,14 @@ const ProductDetail: React.FC = () => {
 					</motion.div>
 				)}
 			</div>
+
+			{/* Edit Product Modal */}
+			{isEditing && product && (
+				<EditProductForm
+					product={product}
+					onClose={() => setIsEditing(false)}
+				/>
+			)}
 		</div>
 	);
 };

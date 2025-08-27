@@ -12,32 +12,19 @@ import {
 	Eye,
 	ShoppingCart,
 } from "lucide-react";
-import { Product } from "../data/products";
-import { loadProducts } from "../utils/productsLoader";
+import { Product } from "../types";
+import { useProducts } from "../contexts/ProductsContext";
 
 const ProductsPage: React.FC = () => {
 	const navigate = useNavigate();
-	const [products, setProducts] = useState<Product[]>([]);
-	const [loading, setLoading] = useState(true);
+	const { products } = useProducts();
+	const [loading, setLoading] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("All");
 	const [sortBy, setSortBy] = useState("name");
 	const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-	// Load products data
-	useEffect(() => {
-		const fetchProducts = async () => {
-			try {
-				const data = await loadProducts();
-				setProducts(data.products);
-				setLoading(false);
-			} catch (error) {
-				console.error("Error loading products:", error);
-				setLoading(false);
-			}
-		};
-		fetchProducts();
-	}, []);
+	// Products are now loaded from context
 
 	const categories = [
 		"All",

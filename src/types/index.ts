@@ -17,3 +17,48 @@ export interface StatCounter {
 	value: number;
 	suffix: string;
 }
+
+export interface User {
+	id: string;
+	email: string;
+	name: string;
+	role: "admin" | "user";
+}
+
+export interface Product {
+	id: number;
+	name: string;
+	description: string;
+	longDescription: string;
+	image: string;
+	images: string[];
+	category: string;
+	price: number;
+	rating: number;
+	reviews: number;
+	features: string[];
+	specifications: Record<string, string>;
+	inStock: boolean;
+	stockQuantity: number;
+	shipping: string;
+	warranty: string;
+	certifications: string[];
+}
+
+export interface ProductFormData {
+	name: string;
+	description: string;
+	longDescription: string;
+	price: number;
+	category: string;
+	images: string[];
+	rating: number;
+	reviews: number;
+	features: string[];
+	specifications: string;
+	inStock: boolean;
+	stockQuantity: number;
+	shipping: string;
+	warranty: string;
+	certifications: string[];
+}

@@ -5,9 +5,11 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Lock, Mail, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { LoginForm } from "../types";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login: React.FC = () => {
 	const navigate = useNavigate();
+	const { login } = useAuth();
 	const [form, setForm] = useState<LoginForm>({
 		email: "",
 		password: "",
@@ -15,6 +17,7 @@ const Login: React.FC = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [errors, setErrors] = useState<Partial<LoginForm>>({});
+	const [loginError, setLoginError] = useState("");
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -51,13 +54,20 @@ const Login: React.FC = () => {
 		if (!validateForm()) return;
 
 		setIsLoading(true);
+		setLoginError("");
 
-		// Simulate login process
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-
-		setIsLoading(false);
-		// Handle successful login here
-		alert("Login successful!");
+		try {
+			const success = await login(form.email, form.password);
+			if (success) {
+				navigate("/dashboard");
+			} else {
+				setLoginError("Invalid email or password. Please try again.");
+			}
+		} catch (error) {
+			setLoginError("An error occurred during login. Please try again.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -188,6 +198,16 @@ const Login: React.FC = () => {
 								Forgot password?
 							</motion.a>
 						</div>
+
+						{/* Login Error */}
+						{loginError && (
+							<motion.div
+								initial={{ opacity: 0, y: -10 }}
+								animate={{ opacity: 1, y: 0 }}
+								className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+								<p className='text-sm text-red-600 text-center'>{loginError}</p>
+							</motion.div>
+						)}
 
 						{/* Submit Button */}
 						<motion.button
