@@ -51,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 				initial={{ y: -100 }}
 				animate={{ y: 0 }}
 				transition={{ duration: 0.6 }}
-				className='fixed top-0 left-0 right-0 z-50 bg-white/20 backdrop-blur-xl border-b border-white/30 shadow-lg'>
+				className='fixed top-0 left-0 right-0 z-50'>
 				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
 					<div className='flex items-center justify-between h-20'>
 						{/* Logo */}
@@ -70,7 +70,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 						{/* Desktop Navigation - Glassy pill-shaped navbar */}
 						<nav className='hidden md:flex items-center'>
 							{!isLoginPage && (
-								<div className='bg-white/20 backdrop-blur-md rounded-full px-2 py-2 border border-white/30 shadow-xl'>
+								<div className='bg-white/60  rounded-full px-2 py-2 border border-white/30 shadow-xl'>
 									<div className='flex items-center space-x-1'>
 										{navItems.map((item) => {
 											const IconComponent = item.icon;
