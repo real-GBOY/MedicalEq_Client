@@ -36,7 +36,7 @@ const AddProductForm: React.FC = () => {
 	const categoriesList = categories.map((cat: any) => ({
 		id: cat._id,
 		name: cat.name,
-	}));
+	})) as Array<{ id: string; name: string }>;
 	const [featuresInput, setFeaturesInput] = useState("");
 	const [certificationsInput, setCertificationsInput] = useState("");
 
@@ -186,6 +186,7 @@ const AddProductForm: React.FC = () => {
 				id: Date.now(), // Generate temporary ID
 				image: form.images[0] || "", // Use first image as main image
 				specifications: specificationsObj,
+				reviews: [], // Convert reviews to empty array to match Product type
 			};
 
 			// Save to context

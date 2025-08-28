@@ -1,12 +1,15 @@
 /** @format */
 
-import React, {
-	createContext,
-	useContext,
-	ReactNode,
-} from "react";
+import React, { createContext, useContext, ReactNode } from "react";
 import { Product } from "../types";
-import { useProducts as useProductsQuery, useCreateProduct, useUpdateProduct, useDeleteProduct, transformApiProduct, transformToApiProduct } from "../hooks/useProducts";
+import {
+	useProducts as useProductsQuery,
+	useCreateProduct,
+	useUpdateProduct,
+	useDeleteProduct,
+	transformApiProduct,
+	transformToApiProduct,
+} from "../hooks/useProducts";
 
 interface ProductsContextType {
 	products: Product[];
@@ -39,13 +42,17 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({
 	children,
 }) => {
 	// Use React Query hooks
-	const { data: apiProducts = [], isLoading: loading, error } = useProductsQuery();
+	const {
+		data: apiProducts = [],
+		isLoading: loading,
+		error,
+	} = useProductsQuery();
 	const createProductMutation = useCreateProduct();
 	const updateProductMutation = useUpdateProduct();
 	const deleteProductMutation = useDeleteProduct();
 
 	// Transform API products to local Product format
-	const products = apiProducts.map(transformApiProduct);
+	const products: Product[] = apiProducts.map(transformApiProduct);
 
 	const addProduct = async (productData: Omit<Product, "_id">) => {
 		try {

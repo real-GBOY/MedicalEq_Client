@@ -30,12 +30,12 @@ const Dashboard: React.FC = () => {
 
 	// Use the products hook to get real-time data
 	const { data: apiProducts = [], isLoading: productsLoading } = useProducts();
-	
+
 	// Use the categories context to get real-time data
 	const { categories, loading: categoriesLoading } = useCategories();
-	
+
 	// Transform API products to local format for display
-	const products = apiProducts.map(product => ({
+	const products = apiProducts.map((product: any) => ({
 		id: product._id,
 		name: product.name,
 		price: product.price,
@@ -43,20 +43,34 @@ const Dashboard: React.FC = () => {
 		inStock: product.inStock,
 		rating: product.rating,
 		category: product.category, // This is the category ID
-	}));
+	})) as Array<{
+		id: string;
+		name: string;
+		price: number;
+		image: string;
+		inStock: boolean;
+		rating: number;
+		category: string;
+	}>;
 
 	// Helper function to get category name by ID or object
-	const getCategoryName = (categoryValue: string | { _id: string; name: string; description: string }): string => {
-		if (typeof categoryValue === 'string') {
-			const category = categories.find(cat => cat._id === categoryValue);
+	const getCategoryName = (
+		categoryValue: string | { _id: string; name: string; description: string }
+	): string => {
+		if (typeof categoryValue === "string") {
+			const category = categories.find((cat) => cat._id === categoryValue);
 			return category ? category.name : categoryValue;
 		}
 		return categoryValue.name;
 	};
 
 	// Helper function to get product count for a category
-	const getProductCountForCategory = (category: { _id: string; name: string }): number => {
-		return products.filter(product => product.category === category._id).length;
+	const getProductCountForCategory = (category: {
+		_id: string;
+		name: string;
+	}): number => {
+		return products.filter((product) => product.category === category._id)
+			.length;
 	};
 
 	// Sync active tab with query string (?tab=...)
@@ -73,7 +87,10 @@ const Dashboard: React.FC = () => {
 		const params = new URLSearchParams(location.search);
 		if (activeTab) {
 			params.set("tab", activeTab);
-			navigate({ pathname: "/dashboard", search: params.toString() }, { replace: true });
+			navigate(
+				{ pathname: "/dashboard", search: params.toString() },
+				{ replace: true }
+			);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeTab]);
@@ -96,7 +113,6 @@ const Dashboard: React.FC = () => {
 			"add-product": "Add Product",
 			products: "Manage Products",
 			categories: "Manage Categories",
-
 		}),
 		[]
 	);
@@ -104,58 +120,61 @@ const Dashboard: React.FC = () => {
 	// Calculate real-time statistics
 	const dashboardStats = useMemo(() => {
 		const totalProducts = products.length;
-		const inStockProducts = products.filter(p => p.inStock).length;
+		const inStockProducts = products.filter((p) => p.inStock).length;
 		const totalValue = products.reduce((sum, p) => sum + p.price, 0);
-		const avgRating = products.length > 0 
-			? (products.reduce((sum, p) => sum + p.rating, 0) / products.length).toFixed(1)
-			: "0.0";
+		const avgRating =
+			products.length > 0
+				? (
+						products.reduce((sum, p) => sum + p.rating, 0) / products.length
+				  ).toFixed(1)
+				: "0.0";
 		const totalCategories = categories.length;
-		const categoriesWithProducts = categories.filter(category => 
-			products.some(product => product.category === category._id)
+		const categoriesWithProducts = categories.filter((category) =>
+			products.some((product) => product.category === category._id)
 		).length;
 
 		return [
-			{ 
-				label: "Total Products", 
-				value: totalProducts.toString(), 
+			{
+				label: "Total Products",
+				value: totalProducts.toString(),
 				color: "bg-blue-500",
 				icon: Package,
-				loading: productsLoading
+				loading: productsLoading,
 			},
-			{ 
-				label: "In Stock", 
-				value: inStockProducts.toString(), 
+			{
+				label: "In Stock",
+				value: inStockProducts.toString(),
 				color: "bg-green-500",
 				icon: Package,
-				loading: productsLoading
+				loading: productsLoading,
 			},
-			{ 
-				label: "Total Categories", 
-				value: totalCategories.toString(), 
+			{
+				label: "Total Categories",
+				value: totalCategories.toString(),
 				color: "bg-teal-500",
 				icon: Tag,
-				loading: categoriesLoading
+				loading: categoriesLoading,
 			},
-			{ 
-				label: "Active Categories", 
-				value: categoriesWithProducts.toString(), 
+			{
+				label: "Active Categories",
+				value: categoriesWithProducts.toString(),
 				color: "bg-purple-500",
 				icon: Tag,
-				loading: categoriesLoading
+				loading: categoriesLoading,
 			},
-			{ 
-				label: "Total Value", 
-				value: `$${(totalValue / 1000).toFixed(1)}K`, 
+			{
+				label: "Total Value",
+				value: `$${(totalValue / 1000).toFixed(1)}K`,
 				color: "bg-orange-500",
 				icon: Package,
-				loading: productsLoading
+				loading: productsLoading,
 			},
-			{ 
-				label: "Avg Rating", 
-				value: avgRating, 
+			{
+				label: "Avg Rating",
+				value: avgRating,
 				color: "bg-indigo-500",
 				icon: Package,
-				loading: productsLoading
+				loading: productsLoading,
 			},
 		];
 	}, [products, productsLoading, categories, categoriesLoading]);
@@ -205,7 +224,8 @@ const Dashboard: React.FC = () => {
 												</p>
 											)}
 										</div>
-										<div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
+										<div
+											className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
 											<stat.icon className='h-6 w-6 text-white' />
 										</div>
 									</div>
@@ -238,23 +258,32 @@ const Dashboard: React.FC = () => {
 								) : products.length > 0 ? (
 									<div className='space-y-3'>
 										{products.slice(0, 3).map((product) => (
-											<div key={product.id} className='flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors'>
+											<div
+												key={product.id}
+												className='flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors'>
 												<img
 													src={product.image}
 													alt={product.name}
 													className='w-10 h-10 rounded-lg object-cover'
 												/>
 												<div className='flex-1'>
-													<p className='font-medium text-gray-900'>{product.name}</p>
-													<p className='text-sm text-gray-500'>${product.price.toLocaleString()}</p>
-													<p className='text-xs text-gray-400'>{getCategoryName(product.category)}</p>
+													<p className='font-medium text-gray-900'>
+														{product.name}
+													</p>
+													<p className='text-sm text-gray-500'>
+														${product.price.toLocaleString()}
+													</p>
+													<p className='text-xs text-gray-400'>
+														{getCategoryName(product.category)}
+													</p>
 												</div>
-												<div className={`px-2 py-1 rounded-full text-xs font-medium ${
-													product.inStock 
-														? 'bg-green-100 text-green-800' 
-														: 'bg-red-100 text-red-800'
-												}`}>
-													{product.inStock ? 'In Stock' : 'Out of Stock'}
+												<div
+													className={`px-2 py-1 rounded-full text-xs font-medium ${
+														product.inStock
+															? "bg-green-100 text-green-800"
+															: "bg-red-100 text-red-800"
+													}`}>
+													{product.inStock ? "In Stock" : "Out of Stock"}
 												</div>
 											</div>
 										))}
@@ -291,18 +320,24 @@ const Dashboard: React.FC = () => {
 									<div className='space-y-3'>
 										{categories.slice(0, 3).map((category) => {
 											const productCount = getProductCountForCategory(category);
-											
+
 											return (
-												<div key={category._id} className='flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors'>
+												<div
+													key={category._id}
+													className='flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors'>
 													<div className='w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center'>
 														<Tag className='h-5 w-5 text-teal-600' />
 													</div>
 													<div className='flex-1'>
-														<p className='font-medium text-gray-900'>{category.name}</p>
-														<p className='text-sm text-gray-500'>{productCount} products</p>
+														<p className='font-medium text-gray-900'>
+															{category.name}
+														</p>
+														<p className='text-sm text-gray-500'>
+															{productCount} products
+														</p>
 													</div>
 													<div className='px-2 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-800'>
-														{productCount > 0 ? 'Active' : 'Empty'}
+														{productCount > 0 ? "Active" : "Empty"}
 													</div>
 												</div>
 											);
@@ -310,7 +345,8 @@ const Dashboard: React.FC = () => {
 									</div>
 								) : (
 									<p className='text-gray-500 text-center py-8'>
-										No categories yet. Create your first category to organize products!
+										No categories yet. Create your first category to organize
+										products!
 									</p>
 								)}
 							</motion.div>
@@ -331,23 +367,29 @@ const Dashboard: React.FC = () => {
 									className='p-4 border-2 border-dashed border-teal-300 rounded-lg hover:border-teal-400 hover:bg-teal-50 transition-all duration-200 text-center group'>
 									<Plus className='h-8 w-8 text-teal-500 mx-auto mb-2 group-hover:scale-110 transition-transform' />
 									<p className='font-medium text-teal-700'>Add Product</p>
-									<p className='text-sm text-teal-600'>Create a new product listing</p>
+									<p className='text-sm text-teal-600'>
+										Create a new product listing
+									</p>
 								</button>
-								
+
 								<button
 									onClick={() => setActiveTab("categories")}
 									className='p-4 border-2 border-dashed border-blue-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 text-center group'>
 									<Tag className='h-8 w-8 text-blue-500 mx-auto mb-2 group-hover:scale-110 transition-transform' />
 									<p className='font-medium text-blue-700'>Manage Categories</p>
-									<p className='text-sm text-blue-600'>Organize your product categories</p>
+									<p className='text-sm text-blue-600'>
+										Organize your product categories
+									</p>
 								</button>
-								
+
 								<button
 									onClick={() => setActiveTab("products")}
 									className='p-4 border-2 border-dashed border-purple-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 text-center group'>
 									<Package className='h-8 w-8 text-purple-500 mx-auto mb-2 group-hover:scale-110 transition-transform' />
 									<p className='font-medium text-purple-700'>Manage Products</p>
-									<p className='text-sm text-purple-600'>Edit and organize your inventory</p>
+									<p className='text-sm text-purple-600'>
+										Edit and organize your inventory
+									</p>
 								</button>
 							</div>
 						</motion.div>
@@ -367,9 +409,10 @@ const Dashboard: React.FC = () => {
 			)}
 
 			{/* Sidebar */}
-			<div className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
-				sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-			}`}>
+			<div
+				className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+					sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+				}`}>
 				<div className='flex flex-col h-full'>
 					{/* Header */}
 					<div className='flex items-center justify-between p-6 border-b border-gray-200'>
@@ -412,7 +455,11 @@ const Dashboard: React.FC = () => {
 											? "bg-teal-50 text-teal-700 border border-teal-200 shadow-sm"
 											: "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
 									}`}>
-									<Icon className={`h-5 w-5 ${activeTab === item.id ? 'text-teal-600' : 'text-gray-500'}`} />
+									<Icon
+										className={`h-5 w-5 ${
+											activeTab === item.id ? "text-teal-600" : "text-gray-500"
+										}`}
+									/>
 									<span className='font-medium'>{item.label}</span>
 								</button>
 							);
@@ -451,9 +498,7 @@ const Dashboard: React.FC = () => {
 				</header>
 
 				{/* Page Content */}
-				<main className='flex-1 p-6 overflow-auto'>
-					{renderContent()}
-				</main>
+				<main className='flex-1 p-6 overflow-auto'>{renderContent()}</main>
 			</div>
 		</div>
 	);
