@@ -89,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 											whileHover={{ scale: 1.05 }}>
 											<Link to='/'>
 												<img
-													src='https://i.postimg.cc/x1bkFGQh/logo.png'
+													src='/logo.png'
 													alt='MedEquip Pro Logo'
 													className='h-7 w-7 object-cover rounded mr-3'
 												/>
@@ -223,7 +223,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 							to='/'
 							className='md:hidden absolute left-4 flex items-center group focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-xl'>
 							<motion.div
-								className='flex items-center space-x-2 p-2 rounded-xl bg-white/60 hover:bg-white/80 focus:bg-white/80 transition-all duration-200 backdrop-blur-sm border border-white/30'
+								className='flex items-center space-x-2 p-2 rounded-xl bg-white/80 hover:bg-white/90 focus:bg-white/90 transition-all duration-200 backdrop-blur-sm border border-white/40 shadow-lg'
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 								initial={{ opacity: 0, x: -20 }}
@@ -232,7 +232,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 								<motion.img
 									src='/logo.png'
 									alt='MedEquip Pro Logo'
-									className='h-8 w-8 object-cover rounded-lg shadow-sm'
+									className='h-9 w-9 object-cover rounded-lg shadow-md'
 									whileHover={{ rotate: 5 }}
 									transition={{ duration: 0.2 }}
 								/>
