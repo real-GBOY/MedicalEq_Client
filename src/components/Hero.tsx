@@ -3,6 +3,7 @@
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Shield, Award, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
 	scrollVariants,
 	hoverVariants,
@@ -14,6 +15,7 @@ const Hero: React.FC = () => {
 	const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
 	const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
 	const y = useTransform(scrollYProgress, [0, 0.5], [0, -50]);
+	const navigate = useNavigate();
 
 	return (
 		<motion.section
@@ -332,7 +334,7 @@ const Hero: React.FC = () => {
 				</svg>
 			</div>
 
-			<div className='container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-24'>
+			<div className='container mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-20 lg:pt-8'>
 				<motion.div
 					variants={scrollVariants.slideUpStagger}
 					initial='hidden'
@@ -364,24 +366,22 @@ const Hero: React.FC = () => {
 							<motion.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								className='bg-white text-[#00796a] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-gray-100 transition-colors w-full sm:w-auto'
-								onClick={() =>
-									document
-										.getElementById("products")
-										?.scrollIntoView({ behavior: "smooth" })
-								}>
+								className='bg-white text-[#00796a] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-gray-100 transition-colors w-full sm:w-auto cursor-pointer select-none z-10 relative'
+								onClick={() => {
+									console.log("Explore Products button clicked");
+									navigate("/products");
+								}}>
 								Explore Products
 							</motion.button>
 
 							<motion.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								className='border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-white hover:text-[#00796a] transition-colors w-full sm:w-auto'
-								onClick={() =>
-									document
-										.getElementById("contact")
-										?.scrollIntoView({ behavior: "smooth" })
-								}>
+								className='border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-white hover:text-[#00796a] transition-colors w-full sm:w-auto cursor-pointer select-none z-10 relative'
+								onClick={() => {
+									console.log("Contact Us button clicked");
+									navigate("/contact");
+								}}>
 								Contact Us
 							</motion.button>
 						</motion.div>
@@ -428,7 +428,7 @@ const Hero: React.FC = () => {
 									className='w-3/4 h-3/4 object-contain rounded-full shadow-2xl'
 								/>
 							</motion.div>
- 
+
 							{/* Decorative Elements */}
 							<motion.div
 								className='absolute -top-2 -left-2 sm:-top-4 sm:-left-4 w-6 h-6 sm:w-8 sm:h-8 bg-yellow-300 rounded-full opacity-60'
