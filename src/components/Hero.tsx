@@ -33,7 +33,10 @@ const Hero: React.FC = () => {
 	};
 
 	type SlotKey = "left" | "right" | "center";
-	const slotStyles: Record<SlotKey, { x: number; y: number; scale: number; zIndex: number; filter: string }> = {
+	const slotStyles: Record<
+		SlotKey,
+		{ x: number; y: number; scale: number; zIndex: number; filter: string }
+	> = {
 		left: { x: -100, y: 0, scale: 0.72, zIndex: 5, filter: "blur(0px)" },
 		right: { x: 100, y: 0, scale: 0.72, zIndex: 5, filter: "blur(0px)" },
 		center: { x: 0, y: 0, scale: 1, zIndex: 10, filter: "none" },
@@ -359,8 +362,7 @@ const Hero: React.FC = () => {
 			</div>
 
 			<div className='container mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-20 lg:pt-8'>
-				<div
-					className='grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 items-center min-h-[70vh] sm:min-h-[75vh] lg:min-h-[85vh]'>
+				<div className='grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 items-center min-h-[70vh] sm:min-h-[75vh] lg:min-h-[85vh]'>
 					{/* Left Side - Content */}
 					<div className='text-white text-center lg:text-left order-2 lg:order-1 lg:col-span-2'>
 						<h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6'>
@@ -428,13 +430,19 @@ const Hero: React.FC = () => {
 									<motion.div
 										key={src}
 										className='absolute rounded-full bg-white/10 backdrop-blur-sm border border-white/30 shadow-2xl flex items-center justify-center overflow-hidden'
-										style={{ width: slot === "center" ? "90%" : "64%", height: slot === "center" ? "90%" : "64%" }}
+										style={{
+											width: slot === "center" ? "90%" : "64%",
+											height: slot === "center" ? "90%" : "64%",
+										}}
 										animate={slotStyles[slot]}
 										transition={{ type: "spring", stiffness: 220, damping: 22 }}
 										onClick={() => setActiveIndex(i)}
-										whileHover={{ scale: slot === "center" ? 1.02 : 0.82 }}
-									>
-										<img src={src} alt='Hero visual' className='w-[78%] h-[78%] object-cover rounded-full' />
+										whileHover={{ scale: slot === "center" ? 1.02 : 0.82 }}>
+										<img
+											src={src}
+											alt='Hero visual'
+											className='w-[78%] h-[78%] object-cover rounded-full'
+										/>
 									</motion.div>
 								);
 							})}
@@ -453,8 +461,7 @@ const Hero: React.FC = () => {
 									duration: 8,
 									repeat: Infinity,
 									ease: "linear",
-								}}
-							></motion.div>
+								}}></motion.div>
 
 							<motion.div
 								className='absolute bottom-16 left-16 sm:bottom-20 sm:left-20 w-20 h-20 sm:w-24 sm:h-24 border border-white/10 rounded-full'
@@ -468,8 +475,7 @@ const Hero: React.FC = () => {
 									repeat: Infinity,
 									ease: "linear",
 									delay: 2,
-								}}
-							></motion.div>
+								}}></motion.div>
 
 							<motion.div
 								className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-40 sm:h-40 border border-white/5 rounded-full'
@@ -483,8 +489,7 @@ const Hero: React.FC = () => {
 									repeat: Infinity,
 									ease: "linear",
 									delay: 4,
-								}}
-							></motion.div>
+								}}></motion.div>
 						</div>
 					</div>
 				</div>

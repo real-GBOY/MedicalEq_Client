@@ -2,16 +2,7 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-	Menu,
-	X,
-	Home,
-	Package,
-	Info,
-	Phone,
-	Zap,
-	Heart,
-} from "lucide-react";
+import { Menu, X, Home, Package, Info, Phone, Zap, Heart } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCategories } from "../contexts/CategoriesContext";
 
@@ -22,10 +13,21 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 	const [showProductsMenu, setShowProductsMenu] = React.useState(false);
+	const [isScrolled, setIsScrolled] = React.useState(false);
 	const { categories } = useCategories();
-	const categoriesList = categories.map(cat => cat.name);
+	const categoriesList = categories.map((cat) => cat.name);
 	const location = useLocation();
 	const navigate = useNavigate();
+
+	// Add scroll effect for mobile header
+	React.useEffect(() => {
+		const handleScroll = () => {
+			setIsScrolled(window.scrollY > 10);
+		};
+
+		window.addEventListener("scroll", handleScroll);
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, []);
 
 	const closeMenu = () => setIsMenuOpen(false);
 
@@ -43,9 +45,24 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 			icon: Package,
 			isActive: location.pathname === "/products",
 		},
-		{ path: "/about", label: "About", icon: Info, isActive: location.pathname === "/about" },
-		{ path: "/favorites", label: "Favorites", icon: Heart, isActive: location.pathname === "/favorites" },
-		{ path: "/contact", label: "Contact", icon: Phone, isActive: location.pathname === "/contact" },
+		{
+			path: "/about",
+			label: "About",
+			icon: Info,
+			isActive: location.pathname === "/about",
+		},
+		{
+			path: "/favorites",
+			label: "Favorites",
+			icon: Heart,
+			isActive: location.pathname === "/favorites",
+		},
+		{
+			path: "/contact",
+			label: "Contact",
+			icon: Phone,
+			isActive: location.pathname === "/contact",
+		},
 	];
 
 	return (
@@ -54,9 +71,13 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 				initial={{ y: -100 }}
 				animate={{ y: 0 }}
 				transition={{ duration: 0.6 }}
-				className='fixed top-0 left-0 right-0 z-40 bg-white/95 md:bg-transparent'>
+				className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+					isScrolled
+						? "bg-white/95 shadow-lg md:bg-white/95"
+						: "bg-white/95 md:bg-transparent"
+				} shadow-sm`}>
 				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-					<div className='flex items-center justify-center h-16 md:h-20 md:mt-10 w-full relative'>
+					<div className='flex items-center justify-center h-16 md:h-20 md:mt-10 w-full relative px-16 md:px-0'>
 						{/* Desktop Navigation - Glassy pill-shaped navbar with integrated logo */}
 						<nav className='hidden md:flex items-center'>
 							{!isLoginPage && (
@@ -86,20 +107,20 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 														// Anchor link with smooth scrolling
 														<button
 															onClick={() => {
-															const element = document.querySelector(
-																item.path
-															);
-															if (element) {
-																element.scrollIntoView({
-																	behavior: "smooth",
-																});
-															}
-														}}
-														className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
-															isActive
-																? "bg-teal-600 text-white shadow-lg"
-																: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
-														}`}>
+																const element = document.querySelector(
+																	item.path
+																);
+																if (element) {
+																	element.scrollIntoView({
+																		behavior: "smooth",
+																	});
+																}
+															}}
+															className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
+																isActive
+																	? "bg-teal-600 text-white shadow-lg"
+																	: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
+															}`}>
 															<IconComponent className='h-4 w-4' />
 															<span className='text-sm font-medium'>
 																{item.label}
@@ -112,8 +133,12 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 														// Router link with optional dropdown for Products
 														<div
 															className='relative'
-															onMouseEnter={() => isProducts && setShowProductsMenu(true)}
-															onMouseLeave={() => isProducts && setShowProductsMenu(false)}>
+															onMouseEnter={() =>
+																isProducts && setShowProductsMenu(true)
+															}
+															onMouseLeave={() =>
+																isProducts && setShowProductsMenu(false)
+															}>
 															<Link
 																to={item.path}
 																className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
@@ -127,11 +152,19 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 																</span>
 																{isProducts && (
 																	<svg
-																		className={`h-4 w-4 transition-transform ${showProductsMenu ? "rotate-180" : "rotate-0"}`}
+																		className={`h-4 w-4 transition-transform ${
+																			showProductsMenu
+																				? "rotate-180"
+																				: "rotate-0"
+																		}`}
 																		viewBox='0 0 20 20'
 																		fill='currentColor'
 																		aria-hidden='true'>
-																		<path fillRule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z' clipRule='evenodd' />
+																		<path
+																			fillRule='evenodd'
+																			d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z'
+																			clipRule='evenodd'
+																		/>
 																	</svg>
 																)}
 																{isActive && (
@@ -139,22 +172,29 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 																)}
 															</Link>
 															{isProducts && showProductsMenu && (
-																<div className='absolute left-0 mt-2 w-56 rounded-2xl bg-white/90 backdrop-blur-md border border-white/40 shadow-2xl p-2'
-																	 onMouseEnter={() => setShowProductsMenu(true)}
-																	 onMouseLeave={() => setShowProductsMenu(false)}>
+																<div
+																	className='absolute left-0 mt-2 w-56 rounded-2xl bg-white/90 backdrop-blur-md border border-white/40 shadow-2xl p-2'
+																	onMouseEnter={() => setShowProductsMenu(true)}
+																	onMouseLeave={() =>
+																		setShowProductsMenu(false)
+																	}>
 																	<div className='px-3 py-2 text-xs font-semibold text-teal-700 uppercase tracking-wide'>
 																		Categories
 																	</div>
-																																		<ul className='max-h-72 overflow-auto'>
+																	<ul className='max-h-72 overflow-auto'>
 																		{categoriesList.length > 0 ? (
 																			categoriesList.map((cat) => (
 																				<li key={cat}>
 																					<button
 																						onClick={(e) => {
-																						e.preventDefault();
-																						navigate(`/products?category=${encodeURIComponent(cat)}`);
-																						setShowProductsMenu(false);
-																					}}
+																							e.preventDefault();
+																							navigate(
+																								`/products?category=${encodeURIComponent(
+																									cat
+																								)}`
+																							);
+																							setShowProductsMenu(false);
+																						}}
 																						className='w-full text-left px-3 py-2 rounded-xl text-gray-700 hover:bg-teal-50 hover:text-teal-700'>
 																						{cat}
 																					</button>
@@ -179,8 +219,27 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 						</nav>
 
 						{/* Mobile left logo */}
-						<Link to='/' className='md:hidden absolute left-4 flex items-center'>
-							<img src='/logo.png' alt='MedEquip Pro Logo' className='h-8 w-8 object-cover rounded-lg' />
+						<Link
+							to='/'
+							className='md:hidden absolute left-4 flex items-center group focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-xl'>
+							<motion.div
+								className='flex items-center space-x-2 p-2 rounded-xl bg-white/60 hover:bg-white/80 focus:bg-white/80 transition-all duration-200 backdrop-blur-sm border border-white/30'
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								initial={{ opacity: 0, x: -20 }}
+								animate={{ opacity: 1, x: 0 }}
+								transition={{ delay: 0.2, duration: 0.5 }}>
+								<motion.img
+									src='/logo.png'
+									alt='MedEquip Pro Logo'
+									className='h-8 w-8 object-cover rounded-lg shadow-sm'
+									whileHover={{ rotate: 5 }}
+									transition={{ duration: 0.2 }}
+								/>
+								<span className='text-sm font-bold text-gray-800 hidden sm:block'>
+									MedEquip Pro
+								</span>
+							</motion.div>
 						</Link>
 
 						{/* Mobile Menu Button - Positioned absolutely on the right */}
@@ -220,44 +279,51 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 							{/* Sidebar Header */}
 							<div className='bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 shadow-lg rounded-br-3xl'>
 								<div className='flex items-center justify-between'>
-									<div className='flex items-center space-x-3'>
-										<div className='p-2 bg-white/20 rounded-xl backdrop-blur-sm'>
+									<Link
+										to='/'
+										onClick={closeMenu}
+										className='flex items-center space-x-3 group'>
+										<motion.div
+											className='p-2 bg-white/20 rounded-xl backdrop-blur-sm group-hover:bg-white/30 transition-all duration-200'
+											whileHover={{ scale: 1.05 }}
+											whileTap={{ scale: 0.95 }}>
 											<img
 												src='/logo.png'
 												alt='MedEquip Pro Logo'
 												className='h-10 w-10 object-cover rounded-lg'
 											/>
-										</div>
+										</motion.div>
 										<div>
-											<h2 className='text-xl font-bold'>MedEquip Pro</h2>
+											<h2 className='text-xl font-bold group-hover:text-teal-100 transition-colors'>
+												MedEquip Pro
+											</h2>
 											<p className='text-teal-100 text-sm font-medium'>
 												Medical Equipment Solutions
 											</p>
 										</div>
-										<button
-											onClick={closeMenu}
-											className='p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-200 hover:scale-105'>
-											<X className='h-5 w-5' />
-										</button>
-									</div>
+									</Link>
+									<button
+										onClick={closeMenu}
+										className='p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-200 hover:scale-105'>
+										<X className='h-5 w-5' />
+									</button>
 								</div>
-
 							</div>
 
 							{/* Sidebar Navigation */}
 							<nav className='flex flex-col p-6 space-y-3'>
-									{!isLoginPage && (
-										<>
-											{navItems.map((item) => {
-												const IconComponent = item.icon;
-												const isActive = item.isActive;
+								{!isLoginPage && (
+									<>
+										{navItems.map((item) => {
+											const IconComponent = item.icon;
+											const isActive = item.isActive;
 
-												return (
-													<React.Fragment key={item.label}>
-														{item.path.startsWith("#") ? (
-															// Anchor link with smooth scrolling
-															<button
-																onClick={() => {
+											return (
+												<React.Fragment key={item.label}>
+													{item.path.startsWith("#") ? (
+														// Anchor link with smooth scrolling
+														<button
+															onClick={() => {
 																closeMenu();
 																const element = document.querySelector(
 																	item.path
@@ -325,16 +391,16 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 												</React.Fragment>
 											);
 										})}
-								{/* Footer */}
-								<div className='mt-auto pt-6 text-center'>
-									<div className='bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-4 border border-teal-100'>
-										<p className='text-xs text-teal-700 font-medium'>
-											Professional Medical Equipment
-										</p>
-									</div>
-								</div>
-							</>
-						)}
+										{/* Footer */}
+										<div className='mt-auto pt-6 text-center'>
+											<div className='bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-4 border border-teal-100'>
+												<p className='text-xs text-teal-700 font-medium'>
+													Professional Medical Equipment
+												</p>
+											</div>
+										</div>
+									</>
+								)}
 							</nav>
 						</motion.div>
 					</>
