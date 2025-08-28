@@ -3,14 +3,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import {
-	Search,
-	Filter,
-	ArrowRight,
-	Heart,
-	Grid3X3,
-	List,
-} from "lucide-react";
+import { Search, Filter, ArrowRight, Heart, Grid3X3, List } from "lucide-react";
 import { Product } from "../types";
 import { useProducts } from "../hooks/useProducts";
 import { toggleFavorite, getFavorites } from "../utils/favorites";
@@ -31,14 +24,17 @@ const ProductsPage: React.FC = () => {
 	}, []);
 
 	// Transform API products to local Product format
-	const products = apiProducts.map(product => ({
+	const products = apiProducts.map((product) => ({
 		_id: product._id, // Keep the original _id for routing
 		name: product.name,
 		description: product.description,
 		longDescription: product.longDescription,
 		image: product.image,
 		images: product.images,
-		category: typeof product.category === 'string' ? product.category : product.category.name,
+		category:
+			typeof product.category === "string"
+				? product.category
+				: product.category.name,
 		price: product.price,
 		rating: product.rating,
 		reviews: product.reviews, // Keep as array of Review objects
@@ -107,8 +103,10 @@ const ProductsPage: React.FC = () => {
 		index: number;
 	}) => {
 		// Helper function to get category name
-		const getCategoryName = (category: string | { _id: string; name: string; description?: string }) => {
-			return typeof category === 'string' ? category : category.name;
+		const getCategoryName = (
+			category: string | { _id: string; name: string; description?: string }
+		) => {
+			return typeof category === "string" ? category : category.name;
 		};
 
 		return (
@@ -126,19 +124,20 @@ const ProductsPage: React.FC = () => {
 						viewMode === "list" ? "w-full sm:w-1/3" : ""
 					}`}>
 					{/* Image Container */}
-					<div className={`relative w-full overflow-hidden ${
-						viewMode === "list" ? "h-48 sm:h-56" : "h-48"
-					}`}>
+					<div
+						className={`relative w-full overflow-hidden ${
+							viewMode === "list" ? "h-48 sm:h-56" : "h-48"
+						}`}>
 						<img
 							src={product.image}
 							alt={product.name}
 							className='w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700'
 						/>
-						
+
 						{/* Gradient Overlay */}
 						<div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
 					</div>
-					
+
 					{/* Action Buttons - Top Right */}
 					<div className='absolute top-3 right-3 sm:top-4 sm:right-4 flex space-x-2 z-20'>
 						<motion.button
@@ -149,30 +148,46 @@ const ProductsPage: React.FC = () => {
 								handleToggleFavorite(product._id);
 							}}
 							className={`bg-white/95 backdrop-blur-sm rounded-full p-2 sm:p-2.5 transition-all duration-300 shadow-lg hover:shadow-xl ${
-								favorites.includes(product._id) ? "text-red-500 hover:bg-red-50" : "text-gray-600 hover:bg-red-50 hover:text-red-500"
+								favorites.includes(product._id)
+									? "text-red-500 hover:bg-red-50"
+									: "text-gray-600 hover:bg-red-50 hover:text-red-500"
 							}`}>
-							<Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${favorites.includes(product._id) ? "fill-red-500" : ""}`} />
+							<Heart
+								className={`h-3 w-3 sm:h-4 sm:w-4 ${
+									favorites.includes(product._id) ? "fill-red-500" : ""
+								}`}
+							/>
 						</motion.button>
-						
+
 						<motion.button
 							whileHover={{ scale: 1.1 }}
 							whileTap={{ scale: 0.9 }}
 							onClick={() => navigate(`/product/${product._id}`)}
 							className='bg-white/95 backdrop-blur-sm rounded-full p-2 sm:p-2.5 hover:bg-blue-50 hover:text-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl text-gray-600'>
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4">
-								<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
-								<circle cx="12" cy="12" r="3"></circle>
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='16'
+								height='16'
+								viewBox='0 0 24 24'
+								fill='none'
+								stroke='currentColor'
+								strokeWidth='2'
+								strokeLinecap='round'
+								strokeLinejoin='round'
+								className='h-3 w-3 sm:h-4 sm:w-4'>
+								<path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'></path>
+								<circle cx='12' cy='12' r='3'></circle>
 							</svg>
 						</motion.button>
 					</div>
-					
+
 					{/* Category Badge - Bottom Left */}
 					<div className='absolute bottom-3 left-3 sm:bottom-4 sm:left-4'>
 						<span className='bg-gradient-to-r from-teal-600 to-emerald-600 backdrop-blur-xl border border-teal-400/50 text-white font-bold px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-full text-xs sm:text-sm shadow-xl shadow-teal-500/25 hover:from-teal-700 hover:to-emerald-700 hover:border-teal-400/70 transition-all duration-300 transform hover:scale-105 drop-shadow-md'>
 							{getCategoryName(product.category)}
 						</span>
 					</div>
-					
+
 					{/* Rating Badge - Top Left */}
 					<div className='absolute top-3 left-3 sm:top-4 sm:left-4'>
 						<span className='bg-white/30 border border-white/30 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-lg flex items-center space-x-1 sm:space-x-1.5'>
@@ -182,23 +197,36 @@ const ProductsPage: React.FC = () => {
 					</div>
 				</div>
 
-				<div className={`${viewMode === "list" ? "p-4 sm:p-6 flex-1" : "p-4 sm:p-5"}`}>
+				<div
+					className={`${
+						viewMode === "list" ? "p-4 sm:p-6 flex-1" : "p-4 sm:p-5"
+					}`}>
 					{/* Product Title */}
-					<div className={`${viewMode === "list" ? "mb-4 sm:mb-5" : "mb-3 sm:mb-4"}`}>
-						<h3 
+					<div
+						className={`${
+							viewMode === "list" ? "mb-4 sm:mb-5" : "mb-3 sm:mb-4"
+						}`}>
+						<h3
 							onClick={() => navigate(`/product/${product._id}`)}
-							className={`${viewMode === "list" ? "text-lg sm:text-xl" : "text-base sm:text-lg"} font-bold text-gray-900 leading-tight cursor-pointer hover:text-teal-600 transition-colors duration-300 mb-2 sm:mb-3`}>
+							className={`${
+								viewMode === "list"
+									? "text-lg sm:text-xl"
+									: "text-base sm:text-lg"
+							} font-bold text-gray-900 leading-tight cursor-pointer hover:text-teal-600 transition-colors duration-300 mb-2 sm:mb-3`}>
 							{product.name}
 						</h3>
-						
+
 						{/* Description */}
 						<p className='text-gray-600 text-xs sm:text-sm leading-relaxed line-clamp-2 mb-3 sm:mb-4'>
 							{product.description}
 						</p>
 					</div>
-					
+
 					{/* Features */}
-					<div className={`${viewMode === "list" ? "mb-4 sm:mb-6" : "mb-4 sm:mb-5"}`}>
+					<div
+						className={`${
+							viewMode === "list" ? "mb-4 sm:mb-6" : "mb-4 sm:mb-5"
+						}`}>
 						<div className='flex flex-wrap gap-1.5 sm:gap-2'>
 							{product.features.slice(0, 3).map((feature, idx) => (
 								<span
@@ -231,7 +259,7 @@ const ProductsPage: React.FC = () => {
 								<ArrowRight className='h-3 w-3 sm:h-4 sm:w-4' />
 							</motion.button>
 						</div>
-						
+
 						{/* Add Order Button - Full Width with Enhanced Hover Effect */}
 						<motion.button
 							whileHover={{ scale: 1.05, y: -2 }}
@@ -243,12 +271,24 @@ const ProductsPage: React.FC = () => {
 							className='group relative w-full bg-gray-100 text-gray-700 px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg hover:bg-teal-600 hover:text-white transition-all duration-500 flex items-center justify-center space-x-2 sm:space-x-3 font-semibold border border-gray-200 hover:border-teal-600 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-teal-500/25'>
 							{/* Button content */}
 							<div className='flex items-center justify-center space-x-2 sm:space-x-3'>
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className='h-3 w-3 sm:h-4 sm:w-4 transition-all duration-500 group-hover:scale-125 group-hover:rotate-12'>
-									<circle cx="8" cy="21" r="1"></circle>
-									<circle cx="19" cy="21" r="1"></circle>
-									<path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+								<svg
+									xmlns='http://www.w3.org/2000/svg'
+									width='18'
+									height='18'
+									viewBox='0 0 24 24'
+									fill='none'
+									stroke='currentColor'
+									strokeWidth='2'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									className='h-3 w-3 sm:h-4 sm:w-4 transition-all duration-500 group-hover:scale-125 group-hover:rotate-12'>
+									<circle cx='8' cy='21' r='1'></circle>
+									<circle cx='19' cy='21' r='1'></circle>
+									<path d='M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12'></path>
 								</svg>
-								<span className='font-semibold text-xs sm:text-sm transition-all duration-500 group-hover:tracking-wide'>Add Order</span>
+								<span className='font-semibold text-xs sm:text-sm transition-all duration-500 group-hover:tracking-wide'>
+									Add Order
+								</span>
 							</div>
 						</motion.button>
 					</div>
@@ -264,7 +304,9 @@ const ProductsPage: React.FC = () => {
 				<div className='container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12'>
 					<div className='text-center py-16 sm:py-20'>
 						<div className='animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-teal-600 mx-auto mb-4'></div>
-						<p className='text-gray-600 text-sm sm:text-base'>Loading products from API...</p>
+						<p className='text-gray-600 text-sm sm:text-base'>
+							Loading products from API...
+						</p>
 					</div>
 				</div>
 			</div>
@@ -280,12 +322,15 @@ const ProductsPage: React.FC = () => {
 						<div className='w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4'>
 							<Filter className='w-6 h-6 sm:w-8 sm:h-8 text-red-600' />
 						</div>
-						<h3 className='text-lg sm:text-xl font-semibold text-gray-900 mb-2'>Error Loading Products</h3>
-						<p className='text-sm sm:text-base text-gray-600 mb-4'>Failed to load products from the API</p>
-						<button 
+						<h3 className='text-lg sm:text-xl font-semibold text-gray-900 mb-2'>
+							Error Loading Products
+						</h3>
+						<p className='text-sm sm:text-base text-gray-600 mb-4'>
+							Failed to load products from the API
+						</p>
+						<button
 							onClick={() => window.location.reload()}
-							className='bg-teal-600 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg hover:bg-teal-700 transition-colors text-sm sm:text-base'
-						>
+							className='bg-teal-600 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg hover:bg-teal-700 transition-colors text-sm sm:text-base'>
 							Retry
 						</button>
 					</div>
@@ -310,7 +355,8 @@ const ProductsPage: React.FC = () => {
 						</span>
 					</h1>
 					<p className='text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4 sm:px-0'>
-						Discover our comprehensive range of cutting-edge medical equipment designed to enhance patient care and improve healthcare outcomes.
+						Discover our comprehensive range of cutting-edge medical equipment
+						designed to enhance patient care and improve healthcare outcomes.
 					</p>
 				</motion.div>
 
@@ -354,10 +400,10 @@ const ProductsPage: React.FC = () => {
 								value={sortBy}
 								onChange={(e) => setSortBy(e.target.value)}
 								className='w-full sm:w-auto px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white text-sm sm:text-base'>
-								<option value="name">Sort by Name</option>
-								<option value="price-low">Price: Low to High</option>
-								<option value="price-high">Price: High to Low</option>
-								<option value="rating">Sort by Rating</option>
+								<option value='name'>Sort by Name</option>
+								<option value='price-low'>Price: Low to High</option>
+								<option value='price-high'>Price: High to Low</option>
+								<option value='rating'>Sort by Rating</option>
 							</select>
 
 							{/* View Mode Toggle */}
@@ -413,8 +459,12 @@ const ProductsPage: React.FC = () => {
 						<div className='w-16 h-16 sm:w-24 sm:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6'>
 							<Search className='w-8 h-8 sm:w-12 sm:h-12 text-gray-400' />
 						</div>
-						<h3 className='text-xl sm:text-2xl font-semibold text-gray-900 mb-2'>No Products Found</h3>
-						<p className='text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 px-4 sm:px-0'>Try adjusting your search criteria or filters.</p>
+						<h3 className='text-xl sm:text-2xl font-semibold text-gray-900 mb-2'>
+							No Products Found
+						</h3>
+						<p className='text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 px-4 sm:px-0'>
+							Try adjusting your search criteria or filters.
+						</p>
 						<button
 							onClick={() => {
 								setSearchTerm("");
