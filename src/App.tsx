@@ -1,23 +1,39 @@
 /** @format */
 
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import Products from "./components/Products";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./components/Contact";
+import Favorites from "./pages/Favorites";
 import ProductsPage from "./components/ProductsPage";
 import ProductDetail from "./components/ProductDetail";
-import WhyChooseUs from "./components/WhyChooseUs";
-import Contact from "./components/Contact";
-import Footer from "./components/Footer";
+import Header from "./components/Header";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import SectionDivider from "./components/SectionDivider";
-import SectionBridge from "./components/SectionBridge";
+// import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProductsProvider } from "./contexts/ProductsContext";
+import { CategoriesProvider } from "./contexts/CategoriesContext";
+import TopBar from "./components/TopBar";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+// Create a client
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: 5 * 60 * 1000, // 5 minutes
+			gcTime: 10 * 60 * 1000, // 10 minutes
+			retry: 1,
+			refetchOnWindowFocus: false,
+		},
+		mutations: {
+			retry: 1,
+		},
+	},
+});
 
 function App() {
 	const pageVariants = {
@@ -33,164 +49,203 @@ function App() {
 	};
 
 	return (
-		<AuthProvider>
-			<ProductsProvider>
-				<Router>
-					<Routes>
-						{/* Login Route */}
-						<Route
-							path='/login'
-							element={
-								<AnimatePresence mode='wait'>
-									<motion.div
-										key='login'
-										initial='initial'
-										animate='in'
-										exit='out'
-										variants={pageVariants}
-										transition={pageTransition}>
-										<Login />
-									</motion.div>
-								</AnimatePresence>
-							}
-						/>
+		<QueryClientProvider client={queryClient}>
+			<AuthProvider>
+				<ProductsProvider>
+					<CategoriesProvider>
+						<Router>
+							<AppContent />
+							<Routes>
+								{/* Contact Route */}
+								<Route
+									path='/contact'
+									element={
+										<AnimatePresence mode='wait'>
+											<motion.div
+												key='contact'
+												initial='initial'
+												animate='in'
+												exit='out'
+												variants={pageVariants}
+												transition={pageTransition}>
+												<Header />
+												<Contact />
+											</motion.div>
+										</AnimatePresence>
+									}
+								/>
+								{/* Login Route */}
+								<Route
+									path='/login'
+									element={
+										<AnimatePresence mode='wait'>
+											<motion.div
+												key='login'
+												initial='initial'
+												animate='in'
+												exit='out'
+												variants={pageVariants}
+												transition={pageTransition}>
+												<Header isLoginPage />
+												<Login />
+											</motion.div>
+										</AnimatePresence>
+									}
+								/>
 
-						{/* Dashboard Route - Protected */}
-						<Route
-							path='/dashboard'
-							element={
-								<ProtectedRoute>
-									<AnimatePresence mode='wait'>
-										<motion.div
-											key='dashboard'
-											initial='initial'
-											animate='in'
-											exit='out'
-											variants={pageVariants}
-											transition={pageTransition}>
-											<Dashboard />
-										</motion.div>
-									</AnimatePresence>
-								</ProtectedRoute>
-							}
-						/>
+								{/* Dashboard Route - Protected */}
+								<Route
+									path='/dashboard'
+									element={
+										<ProtectedRoute>
 
-						{/* Products Page Route */}
-						<Route
-							path='/products'
-							element={
-								<AnimatePresence mode='wait'>
-									<motion.div
-										key='products'
-										initial='initial'
-										animate='in'
-										exit='out'
-										variants={pageVariants}
-										transition={pageTransition}>
-										<Header />
-										<ProductsPage />
-										<Footer />
-									</motion.div>
-								</AnimatePresence>
-							}
-						/>
+											<AnimatePresence mode='wait'>
+												<motion.div
+													key='dashboard'
+													initial='initial'
+													animate='in'
+													exit='out'
+													variants={pageVariants}
+													transition={pageTransition}>
+													<Dashboard />
+												</motion.div>
+											</AnimatePresence>
+										</ProtectedRoute>
+										
+									}
+								/>
 
-						{/* Product Detail Route */}
-						<Route
-							path='/product/:id'
-							element={
-								<AnimatePresence mode='wait'>
-									<motion.div
-										key='product-detail'
-										initial='initial'
-										animate='in'
-										exit='out'
-										variants={pageVariants}
-										transition={pageTransition}>
-										<Header />
-										<ProductDetail />
-										<Footer />
-									</motion.div>
-								</AnimatePresence>
-							}
-						/>
+								{/* Products Page Route */}
+								<Route
+									path='/products'
+									element={
+										<AnimatePresence mode='wait'>
+											<motion.div
+												key='products'
+												initial='initial'
+												animate='in'
+												exit='out'
+												variants={pageVariants}
+												transition={pageTransition}>
+												<Header />
+												<ProductsPage />
+											</motion.div>
+										</AnimatePresence>
+									}
+								/>
 
-						{/* Home Route */}
-						<Route
-							path='/'
-							element={
-								<AnimatePresence mode='wait'>
-									<motion.div
-										key='home'
-										initial='initial'
-										animate='in'
-										exit='out'
-										variants={pageVariants}
-										transition={pageTransition}
-										className='min-h-screen bg-white'>
-										<Header />
-										<Hero />
-										{/* Simple Section Divider */}
-										<svg
-											viewBox='0 0 1440 60'
-											xmlns='http://www.w3.org/2000/svg'
-											className='w-full'
-											style={{ height: "80px" }}></svg>
+								{/* Product Detail Route */}
+								<Route
+									path='/product/:id'
+									element={
+										<AnimatePresence mode='wait'>
+											<motion.div
+												key='product-detail'
+												initial='initial'
+												animate='in'
+												exit='out'
+												variants={pageVariants}
+												transition={pageTransition}>
+												<Header />
+												<ProductDetail />
+											</motion.div>
+										</AnimatePresence>
+									}
+								/>
 
-										<Products />
-										{/* Section Divider after Products */}
-										<SectionDivider
-											variant='curve-down'
-											color='#134e4a'
-											height={60}
-										/>
-										{/* Enhanced Diagonal Divider - Products to WhyChooseUs */}
-										<WhyChooseUs />
-										{/* Complementary Diagonal Divider - WhyChooseUs to Contact */}
-										<SectionDivider
-											variant='wave'
-											color='url(#gradientWave)'
-											height={120}
-										/>
+								{/* Favorites Route */}
+								<Route
+									path='/favorites'
+									element={
+										<AnimatePresence mode='wait'>
+											<motion.div
+												key='favorites'
+												initial='initial'
+												animate='in'
+												exit='out'
+												variants={pageVariants}
+												transition={pageTransition}>
+												<Header />
+												<Favorites />
+											</motion.div>
+										</AnimatePresence>
+									}
+								/>
 
-										<svg width='0' height='0'>
-											<defs>
-												<linearGradient
-													id='gradientWave'
-													x1='0%'
-													y1='0%'
-													x2='100%'
-													y2='0%'>
-													<stop offset='0%' stopColor='#134e4a' />
-													<stop offset='100%' stopColor='#0f766e' />
-												</linearGradient>
-											</defs>
-										</svg>
+								{/* About Route */}
+								<Route
+									path='/about'
+									element={
+										<AnimatePresence mode='wait'>
+											<motion.div
+												key='about'
+												initial='initial'
+												animate='in'
+												exit='out'
+												variants={pageVariants}
+												transition={pageTransition}>
+												<Header />
+												<About />
+											</motion.div>
+										</AnimatePresence>
+									}
+								/>
 
-										<Contact />
-										{/* Simple Bridge */}
-										<SectionBridge variant='gradient'>
-											<div className='text-center py-6'>
-												<div className='flex items-center justify-center space-x-3 mb-3'>
-													<div className='w-2 h-2 bg-teal-500 rounded-full' />
-													<div className='w-2 h-2 bg-blue-500 rounded-full' />
-													<div className='w-2 h-2 bg-purple-500 rounded-full' />
-												</div>
-												<p className='text-sm text-gray-500'>
-													Connecting healthcare professionals worldwide
-												</p>
-											</div>
-										</SectionBridge>
-										<Footer />
-									</motion.div>
-								</AnimatePresence>
-							}
-						/>
-					</Routes>
-				</Router>
-			</ProductsProvider>
-		</AuthProvider>
+								{/* Home Route */}
+								<Route
+									path='/'
+									element={
+										<AnimatePresence mode='wait'>
+											<motion.div
+												key='home'
+												initial='initial'
+												animate='in'
+												exit='out'
+												variants={pageVariants}
+												transition={pageTransition}>
+												<Home />
+											</motion.div>
+										</AnimatePresence>
+									}
+								/>
+							</Routes>
+							{/* Toast Notifications */}
+							<Toaster
+								position="top-right"
+								toastOptions={{
+									duration: 4000,
+									style: {
+										background: '#363636',
+										color: '#fff',
+									},
+									success: {
+										duration: 4000,
+										style: {
+											background: '#10b981',
+											color: '#fff',
+										},
+									},
+									error: {
+										duration: 4000,
+										style: {
+											background: '#ef4444',
+											color: '#fff',
+										},
+									},
+								}}
+							/>
+						</Router>
+					</CategoriesProvider>
+				</ProductsProvider>
+			</AuthProvider>
+		</QueryClientProvider>
 	);
 }
+
+const AppContent = () => {
+	const location = useLocation();
+	const hideChrome = location.pathname.startsWith("/dashboard");
+	return hideChrome ? null : <TopBar />;
+};
 
 export default App;

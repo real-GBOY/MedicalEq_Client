@@ -55,11 +55,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 
 			// Demo login logic
-			if (email === "demo@medequippro.com" && password === "demo123") {
+			if (email === "Zaher@gmail.com" && password === "Zaher@#123") {
 				const demoUser: User = {
 					id: "1",
-					email: "demo@medequippro.com",
-					name: "Demo User",
+					email: "Zaher@gmail.com",
+					name: "Zaher",
 					role: "admin",
 				};
 

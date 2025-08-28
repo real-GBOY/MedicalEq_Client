@@ -3,20 +3,20 @@
 import React, {
 	createContext,
 	useContext,
-	useState,
-	useEffect,
 	ReactNode,
 } from "react";
-import { productsData } from "../data/products";
 import { Product } from "../types";
+import { useProducts as useProductsQuery, useCreateProduct, useUpdateProduct, useDeleteProduct, transformApiProduct, transformToApiProduct } from "../hooks/useProducts";
 
 interface ProductsContextType {
 	products: Product[];
-	addProduct: (product: Omit<Product, "id">) => void;
-	updateProduct: (id: number, updates: Partial<Product>) => void;
-	deleteProduct: (id: number) => void;
-	getProductById: (id: number) => Product | undefined;
+	addProduct: (product: Omit<Product, "_id">) => Promise<boolean>;
+	updateProduct: (id: string, updates: Partial<Product>) => void;
+	deleteProduct: (id: string) => void;
+	getProductById: (id: string) => Product | undefined;
 	resetToInitialProducts: () => void;
+	loading: boolean;
+	error: Error | null;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(
@@ -38,72 +38,52 @@ interface ProductsProviderProps {
 export const ProductsProvider: React.FC<ProductsProviderProps> = ({
 	children,
 }) => {
-	const [products, setProducts] = useState<Product[]>([]);
+	// Use React Query hooks
+	const { data: apiProducts = [], isLoading: loading, error } = useProductsQuery();
+	const createProductMutation = useCreateProduct();
+	const updateProductMutation = useUpdateProduct();
+	const deleteProductMutation = useDeleteProduct();
 
-	// Load initial products from products.ts
-	useEffect(() => {
-		setProducts(productsData.products);
-	}, []);
+	// Transform API products to local Product format
+	const products = apiProducts.map(transformApiProduct);
 
-	const addProduct = (productData: Omit<Product, "id">) => {
-		const newProduct: Product = {
-			...productData,
-			id: Date.now(), // Generate unique ID
-		};
-
-		setProducts((prev) => [newProduct, ...prev]);
-
-		// Save to localStorage for persistence - only save the new products, not the initial ones
-		const storedProducts = JSON.parse(localStorage.getItem("products") || "[]");
-		const updatedStoredProducts = [newProduct, ...storedProducts];
-		localStorage.setItem("products", JSON.stringify(updatedStoredProducts));
-
-		console.log("Product added to context:", newProduct);
+	const addProduct = async (productData: Omit<Product, "_id">) => {
+		try {
+			const apiProductData = transformToApiProduct(productData);
+			await createProductMutation.mutateAsync(apiProductData);
+			return true;
+		} catch (err) {
+			console.error("Error adding product:", err);
+			return false;
+		}
 	};
 
-	const updateProduct = (id: number, updates: Partial<Product>) => {
-		setProducts((prev) =>
-			prev.map((product) =>
-				product.id === id ? { ...product, ...updates } : product
-			)
-		);
+	const updateProduct = async (id: string, updates: Partial<Product>) => {
+		try {
+			const apiUpdates = transformToApiProduct(updates);
+			await updateProductMutation.mutateAsync({ id, data: apiUpdates });
+		} catch (err) {
+			console.error("Error updating product:", err);
+		}
 	};
 
-	const deleteProduct = (id: number) => {
-		setProducts((prev) => prev.filter((product) => product.id !== id));
+	const deleteProduct = async (id: string) => {
+		try {
+			await deleteProductMutation.mutateAsync(id);
+		} catch (err) {
+			console.error("Error deleting product:", err);
+		}
 	};
 
-	const getProductById = (id: number) => {
-		return products.find((product) => product.id === id);
+	const getProductById = (id: string) => {
+		return products.find((product) => product._id === id);
 	};
 
 	const resetToInitialProducts = () => {
-		setProducts(productsData.products);
-		localStorage.removeItem("products");
-		console.log("Reset to initial products");
+		// This function is now handled by React Query's cache invalidation
+		// The products will automatically refresh from the API
+		console.log("Products will refresh from API");
 	};
-
-	// Load products from localStorage on mount
-	useEffect(() => {
-		const storedProducts = localStorage.getItem("products");
-		if (storedProducts) {
-			try {
-				const parsedProducts = JSON.parse(storedProducts);
-				// Merge stored products with initial products, avoiding duplicates by ID
-				const initialProductIds = new Set(
-					productsData.products.map((p) => p.id)
-				);
-				const newStoredProducts = parsedProducts.filter(
-					(p: Product) => !initialProductIds.has(p.id)
-				);
-				const mergedProducts = [...productsData.products, ...newStoredProducts];
-				setProducts(mergedProducts);
-			} catch (error) {
-				console.error("Error parsing stored products:", error);
-				setProducts(productsData.products);
-			}
-		}
-	}, []);
 
 	const value: ProductsContextType = {
 		products,
@@ -112,6 +92,8 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({
 		deleteProduct,
 		getProductById,
 		resetToInitialProducts,
+		loading,
+		error: error as Error | null,
 	};
 
 	return (

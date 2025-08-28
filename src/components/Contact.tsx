@@ -1,19 +1,38 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Clock, User, AtSign, Package, ChevronDown, Layers } from "lucide-react";
 import { ContactForm } from "../types";
 import emailjs from "@emailjs/browser";
 import { EMAILJS_CONFIG, initEmailJS } from "../config/emailjs";
+import { useSearchParams } from "react-router-dom";
+import { useProducts } from "../contexts/ProductsContext";
 
 const Contact: React.FC = () => {
+	const { products } = useProducts();
+	const [searchParams] = useSearchParams();
+	const productIdFromQuery = searchParams.get("productId");
+	const preselectedProductId = productIdFromQuery || undefined;
+
 	const [form, setForm] = useState<ContactForm>({
 		name: "",
 		email: "",
 		phone: "",
 		message: "",
 	});
+
+	const categories = useMemo(
+		() => ["All", ...Array.from(new Set(products.map((p) => 
+		typeof p.category === 'string' ? p.category : p.category?.name
+	)))],
+		[products]
+	);
+	const [selectedCategory, setSelectedCategory] = useState<string>("All");
+	const [selectedProductId, setSelectedProductId] = useState<string | undefined>(
+		preselectedProductId
+	);
+	const [quantity, setQuantity] = useState<number>(1);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -26,18 +45,38 @@ const Contact: React.FC = () => {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (preselectedProductId && products.length > 0) {
+			const product = products.find((p) => p._id === preselectedProductId);
+			if (product) {
+				setSelectedProductId(product._id);
+				setSelectedCategory(typeof product.category === 'string' ? product.category : product.category?.name || "");
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [preselectedProductId, products.length]);
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setIsSubmitting(true);
 		setError(null);
 
 		try {
+			const selectedProduct =
+				selectedProductId !== undefined
+					? products.find((p) => p._id === selectedProductId)
+					: undefined;
+			const orderDetails = selectedProduct
+				? `\n\nOrder Details:\n- Product: ${selectedProduct.name}\n- Category: ${typeof selectedProduct.category === 'string' ? selectedProduct.category : selectedProduct.category?.name || ""}\n- Quantity: ${quantity}`
+				: selectedCategory !== "All"
+				? `\n\nOrder Details:\n- Category: ${selectedCategory}\n- Product: (not selected)\n- Quantity: ${quantity}`
+				: "";
 			// EmailJS service configuration
 			const templateParams = {
 				from_name: form.name,
 				from_email: form.email,
 				from_phone: form.phone,
-				message: form.message,
+				message: `${form.message}${orderDetails}`,
 				to_name: "MedEquip Pro Team",
 			};
 
@@ -50,6 +89,9 @@ const Contact: React.FC = () => {
 
 			setIsSubmitted(true);
 			setForm({ name: "", email: "", phone: "", message: "" });
+			setSelectedCategory("All");
+			setSelectedProductId(undefined);
+			setQuantity(1);
 
 			// Reset success message after 5 seconds
 			setTimeout(() => {
@@ -171,52 +213,138 @@ const Contact: React.FC = () => {
 							<form onSubmit={handleSubmit} className='space-y-6'>
 								<div className='grid sm:grid-cols-2 gap-6'>
 									<motion.div whileFocus={{ scale: 1.02 }}>
-										<label className='block text-sm font-medium text-gray-700 mb-2'>
+										<label className='block text-sm font-semibold text-gray-800 mb-2'>
 											Full Name *
 										</label>
-										<input
-											type='text'
-											name='name'
-											value={form.name}
-											onChange={handleChange}
-											required
-											className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all'
-											placeholder='John Doe'
-										/>
+										<div className='relative'>
+											<User className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400' />
+											<input
+												type='text'
+												name='name'
+												value={form.name}
+												onChange={handleChange}
+												required
+												className='w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all bg-white/60 backdrop-blur-sm'
+												placeholder='John Doe'
+											/>
+										</div>
 									</motion.div>
 
 									<motion.div whileFocus={{ scale: 1.02 }}>
-										<label className='block text-sm font-medium text-gray-700 mb-2'>
+										<label className='block text-sm font-semibold text-gray-800 mb-2'>
 											Email Address *
 										</label>
-										<input
-											type='email'
-											name='email'
-											value={form.email}
-											onChange={handleChange}
-											required
-											className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all'
-											placeholder='john@example.com'
-										/>
+										<div className='relative'>
+											<AtSign className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400' />
+											<input
+												type='email'
+												name='email'
+												value={form.email}
+												onChange={handleChange}
+												required
+												className='w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all bg-white/60 backdrop-blur-sm'
+												placeholder='john@example.com'
+											/>
+										</div>
 									</motion.div>
 								</div>
 
 								<motion.div whileFocus={{ scale: 1.02 }}>
-									<label className='block text-sm font-medium text-gray-700 mb-2'>
+									<label className='block text-sm font-semibold text-gray-800 mb-2'>
 										Phone Number
 									</label>
-									<input
-										type='tel'
-										name='phone'
-										value={form.phone}
-										onChange={handleChange}
-										className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all'
-										placeholder='+1 (555) 123-4567'
-									/>
+									<div className='relative'>
+										<Phone className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400' />
+										<input
+											type='tel'
+											name='phone'
+											value={form.phone}
+											onChange={handleChange}
+											className='w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all bg-white/60 backdrop-blur-sm'
+											placeholder='+1 (555) 123-4567'
+										/>
+									</div>
 								</motion.div>
 
+					{/* Order Selection */}
+					<div className='grid sm:grid-cols-2 gap-6'>
+						<motion.div whileFocus={{ scale: 1.02 }}>
+							<label className='block text-sm font-semibold text-gray-800 mb-2'>
+								Category
+							</label>
+							<div className='relative'>
+								<Layers className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none' />
+								<select
+									value={selectedCategory}
+									onChange={(e) => {
+										setSelectedCategory(e.target.value);
+										setSelectedProductId(undefined);
+									}}
+									className='appearance-none w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all bg-white/60 backdrop-blur-sm hover:border-gray-300'
+								>
+									{categories.map((cat) => (
+										<option key={cat} value={cat}>
+											{cat}
+										</option>
+									))}
+								</select>
+								<ChevronDown className='absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none' />
+							</div>
+						</motion.div>
+
+						<motion.div whileFocus={{ scale: 1.02 }}>
+							<label className='block text-sm font-semibold text-gray-800 mb-2'>
+								Product
+							</label>
+							<div className='relative'>
+								<Package className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none' />
+								<select
+									value={selectedProductId ?? ""}
+									onChange={(e) =>
+										setSelectedProductId(
+											e.target.value || undefined
+										)
+									}
+									className='appearance-none w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all bg-white/60 backdrop-blur-sm hover:border-gray-300'
+								>
+									<option value=''>Select a product (optional)</option>
+									{products
+										.filter((p) =>
+											selectedCategory === "All" ? true : 
+											(typeof p.category === 'string' ? p.category === selectedCategory : p.category?.name === selectedCategory)
+										)
+										.map((p) => (
+																			<option key={p._id} value={p._id}>
+									{p.name}
+								</option>
+										))}
+								</select>
+								<ChevronDown className='absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none' />
+							</div>
+						</motion.div>
+					</div>
+
+								<div className='grid sm:grid-cols-2 gap-6'>
+									<motion.div whileFocus={{ scale: 1.02 }}>
+										<label className='block text-sm font-semibold text-gray-800 mb-2'>
+											Quantity
+										</label>
+										<div className='flex items-center gap-2'>
+											<button type='button' onClick={() => setQuantity(Math.max(1, quantity - 1))} className='px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50'>-</button>
+											<input
+												type='number'
+												min={1}
+												value={quantity}
+												onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+												className='w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-center'
+											/>
+											<button type='button' onClick={() => setQuantity(quantity + 1)} className='px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50'>+</button>
+										</div>
+									</motion.div>
+								</div>
+
 								<motion.div whileFocus={{ scale: 1.02 }}>
-									<label className='block text-sm font-medium text-gray-700 mb-2'>
+									<label className='block text-sm font-semibold text-gray-800 mb-2'>
 										Message *
 									</label>
 									<textarea
@@ -225,9 +353,10 @@ const Contact: React.FC = () => {
 										onChange={handleChange}
 										required
 										rows={5}
-										className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none'
+										className='w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none bg-white/60 backdrop-blur-sm'
 										placeholder='Tell us about your medical equipment needs...'
 									/>
+									<p className='text-xs text-gray-500 mt-1'>Include delivery location, timeline, and any specs.</p>
 								</motion.div>
 
 								<motion.button
@@ -275,6 +404,26 @@ const Contact: React.FC = () => {
 						transition={{ duration: 0.6 }}
 						className='bg-white p-8 rounded-2xl shadow-lg'>
 						<h3 className='text-2xl font-semibold text-gray-900 mb-6'>
+							Order Summary
+						</h3>
+						<div className='space-y-4 mb-8'>
+							<div className='flex items-center gap-3 text-gray-700'>
+								<Package className='h-5 w-5 text-teal-600' />
+								<span className='font-medium'>
+									{selectedProductId ? products.find((p) => p._id === selectedProductId)?.name : "No product selected"}
+								</span>
+							</div>
+							<div className='flex items-center gap-3 text-gray-700'>
+								<MapPin className='h-5 w-5 text-teal-600' />
+								<span className='font-medium'>Category: {selectedCategory}</span>
+							</div>
+							<div className='flex items-center gap-3 text-gray-700'>
+								<span className='inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-50 text-teal-700 border border-teal-100 text-sm'>#</span>
+								<span className='font-medium'>Quantity: {quantity}</span>
+							</div>
+						</div>
+
+						<h3 className='text-2xl font-semibold text-gray-900 mb-6'>
 							Our Location
 						</h3>
 						<div className='relative h-64 bg-gray-100 rounded-lg overflow-hidden'>
@@ -292,6 +441,7 @@ const Contact: React.FC = () => {
 								</div>
 							</div>
 						</div>
+
 						<div className='mt-6 space-y-4'>
 							<div className='flex items-center space-x-3'>
 								<Clock className='h-5 w-5 text-teal-600' />

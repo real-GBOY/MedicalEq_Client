@@ -25,17 +25,25 @@ export interface User {
 	role: "admin" | "user";
 }
 
+export interface Review {
+	_id: string;
+	user: string;
+	rating: number;
+	comment: string;
+	date: string;
+}
+
 export interface Product {
-	id: number;
+	_id: string;
 	name: string;
 	description: string;
 	longDescription: string;
 	image: string;
 	images: string[];
-	category: string;
+	category: string | { _id: string; name: string; description?: string };
 	price: number;
 	rating: number;
-	reviews: number;
+	reviews: Review[];
 	features: string[];
 	specifications: Record<string, string>;
 	inStock: boolean;
@@ -61,4 +69,23 @@ export interface ProductFormData {
 	shipping: string;
 	warranty: string;
 	certifications: string[];
+}
+
+// Category interfaces
+export interface Category {
+	_id: string;
+	name: string;
+	description: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface CreateCategoryData {
+	name: string;
+	description?: string;
+}
+
+export interface UpdateCategoryData {
+	name?: string;
+	description?: string;
 }

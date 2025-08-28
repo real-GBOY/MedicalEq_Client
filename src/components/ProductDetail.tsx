@@ -11,43 +11,71 @@ import {
 	Shield,
 	Truck,
 	RotateCcw,
-	Edit,
-	Trash2,
+	User,
+	Calendar,
+	Plus,
 } from "lucide-react";
-import { Product } from "../types";
-import { useProducts } from "../contexts/ProductsContext";
-import EditProductForm from "./EditProductForm";
+import { Product, Review } from "../types";
+import { productApi } from "../services/productApi";
 
 const ProductDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
-	const { products, getProductById, updateProduct, deleteProduct } =
-		useProducts();
 	const [product, setProduct] = useState<Product | null>(null);
 	const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [selectedImage, setSelectedImage] = useState(0);
-	const [isEditing, setIsEditing] = useState(false);
-	const [isDeleting, setIsDeleting] = useState(false);
+	const [reviews, setReviews] = useState<Review[]>([]);
+	const [averageRating, setAverageRating] = useState(0);
+	const [totalReviews, setTotalReviews] = useState(0);
+	const [newReview, setNewReview] = useState({
+		rating: 5,
+		comment: "",
+		user: "Anonymous User"
+	});
 
 	// Load product data
 	useEffect(() => {
 		if (!id) return;
 
-		const productData = getProductById(Number(id));
-		if (productData) {
-			setProduct(productData);
-			// Reset selected image to 0 when product changes
-			setSelectedImage(0);
-			// Get related products from the same category
-			const related = products
-				.filter(
-					(p) => p.category === productData.category && p.id !== productData.id
-				)
-				.slice(0, 4);
-			setRelatedProducts(related);
-		}
-	}, [id, getProductById, products]);
+		const loadProduct = async () => {
+			setLoading(true);
+			try {
+				const productData = await productApi.getProductById(id);
+				setProduct(productData);
+				
+				// Load reviews
+				const reviewsData = await productApi.getProductReviews(id);
+				setReviews(reviewsData.reviews);
+				setAverageRating(reviewsData.averageRating);
+				setTotalReviews(reviewsData.totalReviews);
+				
+				// Reset selected image to 0 when product changes
+				setSelectedImage(0);
+				
+				// Get related products from the same category
+				const allProducts = await productApi.getAllProducts();
+				const categoryName = typeof productData.category === 'string' 
+					? productData.category 
+					: productData.category.name;
+				const related = allProducts
+					.filter(
+						(p) => {
+							const pCategory = typeof p.category === 'string' ? p.category : p.category.name;
+							return pCategory === categoryName && p._id !== productData._id;
+						}
+					)
+					.slice(0, 4);
+				setRelatedProducts(related);
+			} catch (error) {
+				console.error("Error loading product:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		loadProduct();
+	}, [id]);
 
 	// Loading state
 	if (loading) {
@@ -93,30 +121,45 @@ const ProductDetail: React.FC = () => {
 
 	const handleAddToCart = () => {
 		// TODO: Implement cart functionality
+		alert("Add to cart functionality coming soon!");
 	};
 
-	const handleEdit = () => {
-		setIsEditing(true);
+	// Helper function to get category name
+	const getCategoryName = (category: string | { _id: string; name: string; description?: string }) => {
+		return typeof category === 'string' ? category : category.name;
 	};
 
-	const handleDelete = async () => {
-		if (!product) return;
+	// Helper function to get category display text
+	const getCategoryDisplayText = (category: string | { _id: string; name: string; description?: string }) => {
+		const categoryName = getCategoryName(category);
+		return categoryName.split(" ")[0];
+	};
 
-		if (
-			window.confirm(
-				`Are you sure you want to delete "${product.name}"? This action cannot be undone.`
-			)
-		) {
-			setIsDeleting(true);
-			try {
-				deleteProduct(product.id);
-				navigate("/products");
-			} catch (error) {
-				console.error("Error deleting product:", error);
-				alert("Error deleting product. Please try again.");
-			} finally {
-				setIsDeleting(false);
-			}
+	const handleAddReview = async () => {
+		if (!newReview.comment.trim()) return;
+
+		try {
+			await productApi.addReview(id!, {
+				user: newReview.user,
+				rating: newReview.rating,
+				comment: newReview.comment
+			});
+
+			// Reload reviews
+			const reviewsData = await productApi.getProductReviews(id!);
+			setReviews(reviewsData.reviews);
+			setAverageRating(reviewsData.averageRating);
+			setTotalReviews(reviewsData.totalReviews);
+
+			// Reset form
+			setNewReview({
+				rating: 5,
+				comment: "",
+				user: "Anonymous User"
+			});
+		} catch (error) {
+			console.error("Error adding review:", error);
+			alert("Error adding review. Please try again.");
 		}
 	};
 
@@ -159,9 +202,9 @@ const ProductDetail: React.FC = () => {
 							<div className='absolute top-2 sm:top-4 left-2 sm:left-4'>
 								<span className='inline-flex items-center space-x-1 sm:space-x-2 bg-white/95 backdrop-blur-sm text-gray-800 px-2 sm:px-3 py-1.5 rounded-lg font-medium border border-white/20 shadow-lg text-xs sm:text-sm'>
 									<Zap className='w-3 h-3 sm:w-4 sm:h-4 text-teal-600' />
-									<span className='hidden sm:inline'>{product.category}</span>
+									<span className='hidden sm:inline'>{getCategoryName(product.category)}</span>
 									<span className='sm:hidden'>
-										{product.category.split(" ")[0]}
+										{getCategoryDisplayText(product.category)}
 									</span>
 								</span>
 							</div>
@@ -236,7 +279,7 @@ const ProductDetail: React.FC = () => {
 										<Star
 											key={i}
 											className={`w-4 h-4 sm:w-5 sm:h-5 ${
-												i < Math.floor(product.rating)
+												i < Math.floor(averageRating)
 													? "text-yellow-400 fill-current"
 													: "text-gray-300"
 											}`}
@@ -244,7 +287,7 @@ const ProductDetail: React.FC = () => {
 									))}
 								</div>
 								<span className='text-gray-600 text-xs sm:text-sm'>
-									{product.rating} ({product.reviews} reviews)
+									{averageRating.toFixed(1)} ({totalReviews} reviews)
 								</span>
 							</motion.div>
 
@@ -298,11 +341,94 @@ const ProductDetail: React.FC = () => {
 							</div>
 						</motion.div>
 
-						{/* Action Buttons */}
+						{/* Reviews Section */}
 						<motion.div
 							initial={{ opacity: 0, y: 15 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.9 }}
+							className='space-y-2 sm:space-y-3 lg:space-y-4'>
+							<h3 className='text-base sm:text-lg font-semibold text-gray-900'>
+								Customer Reviews ({totalReviews})
+							</h3>
+							{reviews.length === 0 ? (
+								<p className='text-gray-600 text-sm'>No reviews yet. Be the first to leave one!</p>
+							) : (
+								<div className='space-y-3'>
+									{reviews.slice(0, 3).map((review, index) => (
+										<div key={index} className='bg-gray-50 p-3 rounded-lg'>
+											<div className='flex items-center space-x-2 mb-2'>
+												<User className='w-4 h-4 text-gray-600' />
+												<span className='font-semibold text-gray-800 text-sm'>{review.user}</span>
+												<span className='text-gray-500 text-xs'>
+													<Calendar className='w-3 h-3 inline-block mr-1' />
+													{new Date(review.date).toLocaleDateString()}
+												</span>
+											</div>
+											<div className='flex items-center space-x-2 mb-2'>
+												{[...Array(5)].map((_, i) => (
+													<Star
+														key={i}
+														className={`w-3 h-3 ${
+															i < review.rating
+																? "text-yellow-400 fill-current"
+																: "text-gray-300"
+														}`}
+													/>
+												))}
+												<span className='text-gray-600 text-xs'>
+													{review.rating}
+												</span>
+											</div>
+											<p className='text-gray-700 text-sm leading-relaxed'>
+												{review.comment}
+											</p>
+										</div>
+									))}
+									{reviews.length > 3 && (
+										<p className='text-center text-sm text-gray-600'>
+											Showing 3 of {reviews.length} reviews
+										</p>
+									)}
+								</div>
+							)}
+
+							{/* Add Review Form */}
+							<div className='pt-4 border-t border-gray-200'>
+								<h4 className='text-base font-semibold text-gray-900 mb-3'>Leave a Review</h4>
+								<div className='flex items-center space-x-2 mb-3'>
+									{[...Array(5)].map((_, i) => (
+										<Star
+											key={i}
+											className={`w-5 h-5 cursor-pointer ${
+												newReview.rating > i
+													? "text-yellow-400 fill-current"
+													: "text-gray-300"
+											}`}
+											onClick={() => setNewReview({ ...newReview, rating: i + 1 })}
+										/>
+									))}
+								</div>
+								<textarea
+									rows={3}
+									className='w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm'
+									placeholder='Write your review here...'
+									value={newReview.comment}
+									onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+								/>
+								<button
+									onClick={handleAddReview}
+									className='mt-3 inline-flex items-center space-x-2 bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 transition-colors text-sm'>
+									<Plus className='w-4 h-4' />
+									<span>Submit Review</span>
+								</button>
+							</div>
+						</motion.div>
+
+						{/* Action Buttons */}
+						<motion.div
+							initial={{ opacity: 0, y: 15 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 1.0 }}
 							className='space-y-3 sm:space-y-4'>
 							<button
 								onClick={handleAddToCart}
@@ -315,30 +441,13 @@ const ProductDetail: React.FC = () => {
 								<ShoppingCart className='w-4 h-4 sm:w-5 sm:h-5' />
 								<span>{product.inStock ? "Add to Cart" : "Out of Stock"}</span>
 							</button>
-
-							{/* Admin Actions */}
-							<div className='flex gap-3'>
-								<button
-									onClick={handleEdit}
-									className='flex-1 inline-flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl'>
-									<Edit className='w-4 h-4' />
-									<span>Edit Product</span>
-								</button>
-								<button
-									onClick={handleDelete}
-									disabled={isDeleting}
-									className='flex-1 inline-flex items-center justify-center space-x-2 bg-red-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl'>
-									<Trash2 className='w-4 h-4' />
-									<span>{isDeleting ? "Deleting..." : "Delete Product"}</span>
-								</button>
-							</div>
 						</motion.div>
 
 						{/* Additional Info */}
 						<motion.div
 							initial={{ opacity: 0, y: 15 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ delay: 1.0 }}
+							transition={{ delay: 1.1 }}
 							className='pt-4 sm:pt-6 lg:pt-8 border-t border-gray-200 space-y-3 sm:space-y-4 lg:space-y-6'>
 							<h3 className='text-base sm:text-lg font-semibold text-gray-900'>
 								Additional Information
@@ -382,7 +491,7 @@ const ProductDetail: React.FC = () => {
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, delay: 1.1 }}
+						transition={{ duration: 0.8, delay: 1.2 }}
 						className='mt-8 sm:mt-12 lg:mt-16 xl:mt-20'>
 						<div className='text-center mb-6 sm:mb-8 lg:mb-12'>
 							<h2 className='text-2xl sm:text-3xl md:text-4xl font-light text-gray-900 mb-2 sm:mb-3 lg:mb-4'>
@@ -399,10 +508,10 @@ const ProductDetail: React.FC = () => {
 						<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6'>
 							{relatedProducts.map((relatedProduct) => (
 								<motion.div
-									key={relatedProduct.id}
+									key={relatedProduct._id}
 									whileHover={{ y: -5 }}
 									className='bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer'
-									onClick={() => navigate(`/product/${relatedProduct.id}`)}>
+									onClick={() => navigate(`/product/${relatedProduct._id}`)}>
 									<div className='relative overflow-hidden rounded-t-xl'>
 										<img
 											src={relatedProduct.image}
@@ -413,10 +522,10 @@ const ProductDetail: React.FC = () => {
 											<span className='inline-flex items-center space-x-1 bg-white/95 backdrop-blur-sm text-gray-800 px-2 py-1 rounded-lg text-xs font-medium'>
 												<Zap className='w-3 h-3 text-teal-600' />
 												<span className='hidden sm:inline'>
-													{relatedProduct.category}
+													{getCategoryName(relatedProduct.category)}
 												</span>
 												<span className='sm:hidden'>
-													{relatedProduct.category.split(" ")[0]}
+													{getCategoryDisplayText(relatedProduct.category)}
 												</span>
 											</span>
 										</div>
@@ -443,14 +552,6 @@ const ProductDetail: React.FC = () => {
 					</motion.div>
 				)}
 			</div>
-
-			{/* Edit Product Modal */}
-			{isEditing && product && (
-				<EditProductForm
-					product={product}
-					onClose={() => setIsEditing(false)}
-				/>
-			)}
 		</div>
 	);
 };

@@ -3,26 +3,21 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Package, Edit, Trash2, Search, Filter, Plus, Eye } from "lucide-react";
-import { Product } from "../types";
+import { Product, Category } from "../types";
 import { useProducts } from "../contexts/ProductsContext";
+import { useCategories } from "../contexts/CategoriesContext";
 import { useNavigate } from "react-router-dom";
 import EditProductForm from "./EditProductForm";
 
 const ManageProducts: React.FC = () => {
 	const { products, deleteProduct } = useProducts();
+	const { categories } = useCategories();
 	const navigate = useNavigate();
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("");
+	const categoriesList = ["All Categories", ...categories.map((cat: Category) => cat.name)];
 	const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-	const [deletingProduct, setDeletingProduct] = useState<number | null>(null);
-
-	const categories = [
-		"All Categories",
-		"Imaging Equipment",
-		"Diagnostic Tools",
-		"Monitoring Systems",
-		"Surgical Equipment",
-	];
+	const [deletingProduct, setDeletingProduct] = useState<string | null>(null);
 
 	const filteredProducts = products.filter((product) => {
 		const matchesSearch =
@@ -39,8 +34,8 @@ const ManageProducts: React.FC = () => {
 		setEditingProduct(product);
 	};
 
-	const handleDelete = async (productId: number) => {
-		const product = products.find((p) => p.id === productId);
+	const handleDelete = async (productId: string) => {
+		const product = products.find((p) => p._id === productId);
 		if (!product) return;
 
 		if (
@@ -50,6 +45,7 @@ const ManageProducts: React.FC = () => {
 		) {
 			setDeletingProduct(productId);
 			try {
+				// local state update only
 				deleteProduct(productId);
 			} catch (error) {
 				console.error("Error deleting product:", error);
@@ -60,7 +56,7 @@ const ManageProducts: React.FC = () => {
 		}
 	};
 
-	const handleView = (productId: number) => {
+	const handleView = (productId: string) => {
 		navigate(`/product/${productId}`);
 	};
 
@@ -68,7 +64,7 @@ const ManageProducts: React.FC = () => {
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
-			className='max-w-7xl mx-auto'>
+			className='max-w-5xl mx-auto'>
 			<div className='bg-white rounded-xl shadow-sm p-6'>
 				{/* Header */}
 				<div className='flex items-center justify-between mb-6'>
@@ -115,7 +111,7 @@ const ManageProducts: React.FC = () => {
 							value={selectedCategory}
 							onChange={(e) => setSelectedCategory(e.target.value)}
 							className='block w-full pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none'>
-							{categories.map((category) => (
+							{categoriesList.map((category) => (
 								<option key={category} value={category}>
 									{category}
 								</option>
@@ -168,7 +164,7 @@ const ManageProducts: React.FC = () => {
 								</tr>
 							) : (
 								filteredProducts.map((product) => (
-									<tr key={product.id} className='hover:bg-gray-50'>
+									<tr key={product._id} className='hover:bg-gray-50'>
 										<td className='px-6 py-4 whitespace-nowrap'>
 											<div className='flex items-center'>
 												<div className='flex-shrink-0 h-12 w-12'>
@@ -186,15 +182,12 @@ const ManageProducts: React.FC = () => {
 													<div className='text-sm font-medium text-gray-900'>
 														{product.name}
 													</div>
-													<div className='text-sm text-gray-500 line-clamp-2'>
-														{product.description}
-													</div>
 												</div>
 											</div>
 										</td>
 										<td className='px-6 py-4 whitespace-nowrap'>
 											<span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800'>
-												{product.category}
+												{typeof product.category === 'string' ? product.category : product.category.name}
 											</span>
 										</td>
 										<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
@@ -216,7 +209,7 @@ const ManageProducts: React.FC = () => {
 										<td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
 											<div className='flex items-center space-x-2'>
 												<button
-													onClick={() => handleView(product.id)}
+													onClick={() => handleView(product._id)}
 													className='text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors'>
 													<Eye className='h-4 w-4' />
 												</button>
@@ -226,8 +219,8 @@ const ManageProducts: React.FC = () => {
 													<Edit className='h-4 w-4' />
 												</button>
 												<button
-													onClick={() => handleDelete(product.id)}
-													disabled={deletingProduct === product.id}
+																					onClick={() => handleDelete(product._id)}
+								disabled={deletingProduct === product._id}
 													className='text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'>
 													<Trash2 className='h-4 w-4' />
 												</button>

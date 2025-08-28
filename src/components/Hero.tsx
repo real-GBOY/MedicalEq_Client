@@ -1,26 +1,47 @@
 /** @format */
 
 import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Shield, Award, Users } from "lucide-react";
+import { motion } from "framer-motion";
+import { Shield, Award, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-	scrollVariants,
-	hoverVariants,
-	useScrollAnimation,
-} from "../utils/scrollAnimations";
 
 const Hero: React.FC = () => {
-	const { scrollYProgress } = useScroll();
-	const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
-	const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
-	const y = useTransform(scrollYProgress, [0, 0.5], [0, -50]);
 	const navigate = useNavigate();
 
+	// Hero tri-image rotating state
+	const heroImages = React.useMemo(
+		() => [
+			"https://i.postimg.cc/Xv8RK0rM/top-view-world-science-day-arrangement-with-stethoscope-removebg-preview.png",
+			"/hero2.png",
+			"/hero3.png",
+		],
+		[]
+	);
+	const [activeIndex, setActiveIndex] = React.useState(0);
+	React.useEffect(() => {
+		const t = setInterval(() => {
+			setActiveIndex((i) => (i + 1) % heroImages.length);
+		}, 4000);
+		return () => clearInterval(t);
+	}, [heroImages.length]);
+
+	const getSlotFor = (imgIdx: number): "left" | "right" | "center" => {
+		const diff = (imgIdx - activeIndex + heroImages.length) % heroImages.length;
+		if (diff === 0) return "center";
+		if (diff === 1) return "right";
+		return "left";
+	};
+
+	type SlotKey = "left" | "right" | "center";
+	const slotStyles: Record<SlotKey, { x: number; y: number; scale: number; zIndex: number; filter: string }> = {
+		left: { x: -100, y: 0, scale: 0.72, zIndex: 5, filter: "blur(0px)" },
+		right: { x: 100, y: 0, scale: 0.72, zIndex: 5, filter: "blur(0px)" },
+		center: { x: 0, y: 0, scale: 1, zIndex: 10, filter: "none" },
+	};
+
 	return (
-		<motion.section
+		<section
 			id='home'
-			style={{ opacity, scale, y }}
 			className='relative min-h-screen py-20 bg-[#00796a] overflow-hidden'>
 			{/* Enhanced Medical Equipment Background Textures */}
 			<div className='absolute inset-0 -z-20 opacity-25'>
@@ -325,76 +346,63 @@ const Hero: React.FC = () => {
 			<div className='absolute bottom-0 left-0 w-full hidden md:block'>
 				<svg
 					viewBox='0 0 1440 120'
+					preserveAspectRatio='none'
+					className='block translate-y-[1px]'
 					fill='none'
 					xmlns='http://www.w3.org/2000/svg'>
 					<path
 						d='M0 120V0C240 40 480 60 720 40C960 20 1200 0 1440 20V120H0Z'
-						fill='#f8fafc'
+						fill='#ffffff'
+						stroke='none'
 					/>
 				</svg>
 			</div>
 
 			<div className='container mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-20 lg:pt-8'>
-				<motion.div
-					variants={scrollVariants.slideUpStagger}
-					initial='hidden'
-					whileInView='visible'
-					viewport={{ once: true }}
+				<div
 					className='grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 items-center min-h-[70vh] sm:min-h-[75vh] lg:min-h-[85vh]'>
 					{/* Left Side - Content */}
-					<motion.div
-						variants={scrollVariants.slideUpItem}
-						className='text-white text-center lg:text-left order-2 lg:order-1 lg:col-span-2'>
-						<motion.h1
-							variants={scrollVariants.textReveal}
-							className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6'>
+					<div className='text-white text-center lg:text-left order-2 lg:order-1 lg:col-span-2'>
+						<h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6'>
 							Advanced Medical
 							<span className='block text-yellow-300'>Equipment</span>
 							for Healthcare Excellence
-						</motion.h1>
+						</h1>
 
-						<motion.p
-							variants={scrollVariants.textReveal}
-							className='text-base sm:text-lg lg:text-xl text-teal-100 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0'>
+						<p className='text-base sm:text-lg lg:text-xl text-teal-100 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0'>
 							Empowering healthcare professionals with state-of-the-art medical
 							equipment and innovative solutions for better patient outcomes.
-						</motion.p>
+						</p>
 
-						<motion.div
-							variants={scrollVariants.slideUpItem}
-							className='flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12 justify-center lg:justify-start'>
+						<div className='flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12 justify-center lg:justify-start'>
 							<motion.button
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
+								whileHover={{ scale: 1.02, y: -1 }}
+								whileTap={{ scale: 0.98 }}
 								className='bg-white text-[#00796a] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-gray-100 transition-colors w-full sm:w-auto cursor-pointer select-none z-10 relative'
 								onClick={() => {
-									console.log("Explore Products button clicked");
 									navigate("/products");
 								}}>
 								Explore Products
 							</motion.button>
 
 							<motion.button
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
+								whileHover={{ scale: 1.02, y: -1 }}
+								whileTap={{ scale: 0.98 }}
 								className='border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-white hover:text-[#00796a] transition-colors w-full sm:w-auto cursor-pointer select-none z-10 relative'
 								onClick={() => {
-									console.log("Contact Us button clicked");
 									navigate("/contact");
 								}}>
 								Contact Us
 							</motion.button>
-						</motion.div>
+						</div>
 
 						{/* Stats */}
-						<motion.div
-							variants={scrollVariants.slideUpItem}
-							className='grid grid-cols-3 gap-4 sm:gap-6'>
+						<div className='grid grid-cols-3 gap-4 sm:gap-6'>
 							{[
 								{ icon: Shield, value: "15+", label: "Years Experience" },
 								{ icon: Award, value: "500+", label: "Medical Devices" },
 								{ icon: Users, value: "10K+", label: "Healthcare Clients" },
-							].map((stat, index) => (
+							].map((stat) => (
 								<motion.div
 									key={stat.label}
 									className='text-center'
@@ -408,83 +416,29 @@ const Hero: React.FC = () => {
 									</div>
 								</motion.div>
 							))}
-						</motion.div>
-					</motion.div>
+						</div>
+					</div>
 
-					{/* Right Side - Stethoscope Image */}
-					<motion.div
-						variants={scrollVariants.fadeInRight}
-						className='relative flex justify-center lg:justify-end order-1 lg:order-2 mb-8 lg:mb-0 lg:col-span-1'>
-						{/* Main Visual Container */}
-						<motion.div variants={scrollVariants.bounceIn} className='relative'>
-							{/* Stethoscope Image */}
-							<motion.div
-								variants={scrollVariants.floating}
-								className='w-80 h-80 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 p-8'>
-								<motion.img
-									variants={scrollVariants.imageReveal}
-									src='https://i.postimg.cc/Xv8RK0rM/top-view-world-science-day-arrangement-with-stethoscope-removebg-preview.png'
-									alt='Professional Medical Stethoscope'
-									className='w-3/4 h-3/4 object-contain rounded-full shadow-2xl'
-								/>
-							</motion.div>
-
-							{/* Decorative Elements */}
-							<motion.div
-								className='absolute -top-2 -left-2 sm:-top-4 sm:-left-4 w-6 h-6 sm:w-8 sm:h-8 bg-yellow-300 rounded-full opacity-60'
-								animate={{
-									y: [0, -10, 0],
-									scale: [1, 1.1, 1],
-									opacity: [0.6, 0.8, 0.6],
-								}}
-								transition={{
-									duration: 3,
-									repeat: Infinity,
-									ease: "easeInOut",
-								}}></motion.div>
-
-							<motion.div
-								className='absolute -bottom-2 -right-2 sm:-bottom-4 sm:-right-4 w-4 h-4 sm:w-6 sm:h-6 bg-white rounded-full opacity-60'
-								animate={{
-									y: [0, 8, 0],
-									scale: [1, 1.2, 1],
-									opacity: [0.6, 0.9, 0.6],
-								}}
-								transition={{
-									duration: 2.5,
-									repeat: Infinity,
-									ease: "easeInOut",
-									delay: 0.5,
-								}}></motion.div>
-
-							<motion.div
-								className='absolute top-1/2 -right-4 sm:-right-8 w-3 h-3 sm:w-4 sm:h-4 bg-green-300 rounded-full opacity-60'
-								animate={{
-									x: [0, 5, 0],
-									rotate: [0, 180, 360],
-									opacity: [0.6, 0.8, 0.6],
-								}}
-								transition={{
-									duration: 4,
-									repeat: Infinity,
-									ease: "easeInOut",
-									delay: 1,
-								}}></motion.div>
-
-							<motion.div
-								className='absolute top-1/2 -left-4 sm:-left-8 w-3 h-3 sm:w-4 sm:h-4 bg-blue-300 rounded-full opacity-60'
-								animate={{
-									x: [0, -5, 0],
-									rotate: [0, -180, -360],
-									opacity: [0.6, 0.8, 0.6],
-								}}
-								transition={{
-									duration: 3.5,
-									repeat: Infinity,
-									ease: "easeInOut",
-									delay: 1.5,
-								}}></motion.div>
-						</motion.div>
+					{/* Right Side - Tri-Image Visual */}
+					<div className='relative w-full flex justify-center items-center self-center order-1 lg:order-2 mb-8 lg:mb-0 lg:col-span-1'>
+						<div className='relative w-[20rem] h-[20rem] sm:w-[24rem] sm:h-[24rem] lg:w-[26rem] lg:h-[26rem]'>
+							{heroImages.map((src, i) => {
+								const slot = getSlotFor(i);
+								return (
+									<motion.div
+										key={src}
+										className='absolute rounded-full bg-white/10 backdrop-blur-sm border border-white/30 shadow-2xl flex items-center justify-center overflow-hidden'
+										style={{ width: slot === "center" ? "90%" : "64%", height: slot === "center" ? "90%" : "64%" }}
+										animate={slotStyles[slot]}
+										transition={{ type: "spring", stiffness: 220, damping: 22 }}
+										onClick={() => setActiveIndex(i)}
+										whileHover={{ scale: slot === "center" ? 1.02 : 0.82 }}
+									>
+										<img src={src} alt='Hero visual' className='w-[78%] h-[78%] object-cover rounded-full' />
+									</motion.div>
+								);
+							})}
+						</div>
 
 						{/* Background Pattern */}
 						<div className='absolute inset-0 -z-10'>
@@ -499,7 +453,8 @@ const Hero: React.FC = () => {
 									duration: 8,
 									repeat: Infinity,
 									ease: "linear",
-								}}></motion.div>
+								}}
+							></motion.div>
 
 							<motion.div
 								className='absolute bottom-16 left-16 sm:bottom-20 sm:left-20 w-20 h-20 sm:w-24 sm:h-24 border border-white/10 rounded-full'
@@ -513,7 +468,8 @@ const Hero: React.FC = () => {
 									repeat: Infinity,
 									ease: "linear",
 									delay: 2,
-								}}></motion.div>
+								}}
+							></motion.div>
 
 							<motion.div
 								className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-40 sm:h-40 border border-white/5 rounded-full'
@@ -527,12 +483,13 @@ const Hero: React.FC = () => {
 									repeat: Infinity,
 									ease: "linear",
 									delay: 4,
-								}}></motion.div>
+								}}
+							></motion.div>
 						</div>
-					</motion.div>
-				</motion.div>
+					</div>
+				</div>
 			</div>
-		</motion.section>
+		</section>
 	);
 };
 

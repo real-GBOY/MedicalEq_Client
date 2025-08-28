@@ -9,11 +9,11 @@ import {
 	Package,
 	Info,
 	Phone,
-	User,
-	Star,
 	Zap,
+	Heart,
 } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useCategories } from "../contexts/CategoriesContext";
 
 interface HeaderProps {
 	isLoginPage?: boolean;
@@ -21,8 +21,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-	const navigate = useNavigate();
+	const [showProductsMenu, setShowProductsMenu] = React.useState(false);
+	const { categories } = useCategories();
+	const categoriesList = categories.map(cat => cat.name);
 	const location = useLocation();
+	const navigate = useNavigate();
 
 	const closeMenu = () => setIsMenuOpen(false);
 
@@ -40,8 +43,9 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 			icon: Package,
 			isActive: location.pathname === "/products",
 		},
-		{ path: "#about", label: "About", icon: Info, isActive: false },
-		{ path: "#contact", label: "Contact", icon: Phone, isActive: false },
+		{ path: "/about", label: "About", icon: Info, isActive: location.pathname === "/about" },
+		{ path: "/favorites", label: "Favorites", icon: Heart, isActive: location.pathname === "/favorites" },
+		{ path: "/contact", label: "Contact", icon: Phone, isActive: location.pathname === "/contact" },
 	];
 
 	return (
@@ -50,9 +54,9 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 				initial={{ y: -100 }}
 				animate={{ y: 0 }}
 				transition={{ duration: 0.6 }}
-				className='fixed top-0 left-0 right-0 z-50'>
+				className='fixed top-0 left-0 right-0 z-40 bg-white/95 md:bg-transparent'>
 				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-					<div className='flex items-center justify-center h-20 w-full relative'>
+					<div className='flex items-center justify-center h-16 md:h-20 md:mt-10 w-full relative'>
 						{/* Desktop Navigation - Glassy pill-shaped navbar with integrated logo */}
 						<nav className='hidden md:flex items-center'>
 							{!isLoginPage && (
@@ -64,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 											whileHover={{ scale: 1.05 }}>
 											<Link to='/'>
 												<img
-													src='/logo.jpeg'
+													src='/logo.png'
 													alt='MedEquip Pro Logo'
 													className='h-7 w-7 object-cover rounded mr-3'
 												/>
@@ -75,26 +79,27 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 											const IconComponent = item.icon;
 											const isActive = item.isActive;
 
+											const isProducts = item.path === "/products";
 											return (
 												<React.Fragment key={item.label}>
 													{item.path.startsWith("#") ? (
 														// Anchor link with smooth scrolling
 														<button
 															onClick={() => {
-																const element = document.querySelector(
-																	item.path
-																);
-																if (element) {
-																	element.scrollIntoView({
-																		behavior: "smooth",
-																	});
-																}
-															}}
-															className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
-																isActive
-																	? "bg-teal-600 text-white shadow-lg"
-																	: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
-															}`}>
+															const element = document.querySelector(
+																item.path
+															);
+															if (element) {
+																element.scrollIntoView({
+																	behavior: "smooth",
+																});
+															}
+														}}
+														className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
+															isActive
+																? "bg-teal-600 text-white shadow-lg"
+																: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
+														}`}>
 															<IconComponent className='h-4 w-4' />
 															<span className='text-sm font-medium'>
 																{item.label}
@@ -104,22 +109,66 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 															)}
 														</button>
 													) : (
-														// Router link
-														<Link
-															to={item.path}
-															className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
-																isActive
-																	? "bg-teal-600 text-white shadow-lg"
-																	: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
-															}`}>
-															<IconComponent className='h-4 w-4' />
-															<span className='text-sm font-medium'>
-																{item.label}
-															</span>
-															{isActive && (
-																<Zap className='h-4 w-4 text-yellow-400 ml-1' />
+														// Router link with optional dropdown for Products
+														<div
+															className='relative'
+															onMouseEnter={() => isProducts && setShowProductsMenu(true)}
+															onMouseLeave={() => isProducts && setShowProductsMenu(false)}>
+															<Link
+																to={item.path}
+																className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
+																	isActive
+																		? "bg-teal-600 text-white shadow-lg"
+																		: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
+																}`}>
+																<IconComponent className='h-4 w-4' />
+																<span className='text-sm font-medium'>
+																	{item.label}
+																</span>
+																{isProducts && (
+																	<svg
+																		className={`h-4 w-4 transition-transform ${showProductsMenu ? "rotate-180" : "rotate-0"}`}
+																		viewBox='0 0 20 20'
+																		fill='currentColor'
+																		aria-hidden='true'>
+																		<path fillRule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z' clipRule='evenodd' />
+																	</svg>
+																)}
+																{isActive && (
+																	<Zap className='h-4 w-4 text-yellow-400 ml-1' />
+																)}
+															</Link>
+															{isProducts && showProductsMenu && (
+																<div className='absolute left-0 mt-2 w-56 rounded-2xl bg-white/90 backdrop-blur-md border border-white/40 shadow-2xl p-2'
+																	 onMouseEnter={() => setShowProductsMenu(true)}
+																	 onMouseLeave={() => setShowProductsMenu(false)}>
+																	<div className='px-3 py-2 text-xs font-semibold text-teal-700 uppercase tracking-wide'>
+																		Categories
+																	</div>
+																																		<ul className='max-h-72 overflow-auto'>
+																		{categoriesList.length > 0 ? (
+																			categoriesList.map((cat) => (
+																				<li key={cat}>
+																					<button
+																						onClick={(e) => {
+																						e.preventDefault();
+																						navigate(`/products?category=${encodeURIComponent(cat)}`);
+																						setShowProductsMenu(false);
+																					}}
+																						className='w-full text-left px-3 py-2 rounded-xl text-gray-700 hover:bg-teal-50 hover:text-teal-700'>
+																						{cat}
+																					</button>
+																				</li>
+																			))
+																		) : (
+																			<li className='px-3 py-2 text-gray-500 text-sm'>
+																				No categories available
+																			</li>
+																		)}
+																	</ul>
+																</div>
 															)}
-														</Link>
+														</div>
 													)}
 												</React.Fragment>
 											);
@@ -128,6 +177,11 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 								</div>
 							)}
 						</nav>
+
+						{/* Mobile left logo */}
+						<Link to='/' className='md:hidden absolute left-4 flex items-center'>
+							<img src='/logo.png' alt='MedEquip Pro Logo' className='h-8 w-8 object-cover rounded-lg' />
+						</Link>
 
 						{/* Mobile Menu Button - Positioned absolutely on the right */}
 						<button
@@ -162,14 +216,14 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 							animate={{ x: 0 }}
 							exit={{ x: "100%" }}
 							transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
-							className='fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white/95 backdrop-blur-xl shadow-2xl z-50 md:hidden border-l border-white/30'>
+							className='fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white/95 backdrop-blur-xl shadow-2xl z-50 md:hidden border-l border-white/30'>
 							{/* Sidebar Header */}
 							<div className='bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 shadow-lg rounded-br-3xl'>
 								<div className='flex items-center justify-between'>
 									<div className='flex items-center space-x-3'>
 										<div className='p-2 bg-white/20 rounded-xl backdrop-blur-sm'>
 											<img
-												src='/logo.jpeg'
+												src='/logo.png'
 												alt='MedEquip Pro Logo'
 												className='h-10 w-10 object-cover rounded-lg'
 											/>
@@ -180,29 +234,30 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 												Medical Equipment Solutions
 											</p>
 										</div>
+										<button
+											onClick={closeMenu}
+											className='p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-200 hover:scale-105'>
+											<X className='h-5 w-5' />
+										</button>
 									</div>
-									<button
-										onClick={closeMenu}
-										className='p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-200 hover:scale-105'>
-										<X className='h-5 w-5' />
-									</button>
 								</div>
+
 							</div>
 
 							{/* Sidebar Navigation */}
 							<nav className='flex flex-col p-6 space-y-3'>
-								{!isLoginPage && (
-									<>
-										{navItems.map((item) => {
-											const IconComponent = item.icon;
-											const isActive = item.isActive;
+									{!isLoginPage && (
+										<>
+											{navItems.map((item) => {
+												const IconComponent = item.icon;
+												const isActive = item.isActive;
 
-											return (
-												<React.Fragment key={item.label}>
-													{item.path.startsWith("#") ? (
-														// Anchor link with smooth scrolling
-														<button
-															onClick={() => {
+												return (
+													<React.Fragment key={item.label}>
+														{item.path.startsWith("#") ? (
+															// Anchor link with smooth scrolling
+															<button
+																onClick={() => {
 																closeMenu();
 																const element = document.querySelector(
 																	item.path
@@ -270,9 +325,6 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 												</React.Fragment>
 											);
 										})}
-									</>
-								)}
-
 								{/* Footer */}
 								<div className='mt-auto pt-6 text-center'>
 									<div className='bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-4 border border-teal-100'>
@@ -281,6 +333,8 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 										</p>
 									</div>
 								</div>
+							</>
+						)}
 							</nav>
 						</motion.div>
 					</>

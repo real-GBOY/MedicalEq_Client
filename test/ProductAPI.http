@@ -1,0 +1,512 @@
+### Product API Documentation
+### Base URL: http://localhost:5000/api/products
+
+# ========================================
+# GET ALL PRODUCTS
+# ========================================
+GET {{baseUrl}}/
+Content-Type: application/json
+
+### Response (200 OK)
+```json
+[
+  {
+    "_id": "64f1a2b3c4d5e6f7g8h9i0j1",
+    "name": "iPhone 15 Pro",
+    "description": "Latest iPhone with advanced features",
+    "longDescription": "The iPhone 15 Pro features the most advanced camera system ever on iPhone, A17 Pro chip for incredible performance, and a stunning Super Retina XDR display.",
+    "image": "https://example.com/iphone15pro.jpg",
+    "images": [
+      "https://example.com/iphone15pro-1.jpg",
+      "https://example.com/iphone15pro-2.jpg"
+    ],
+    "category": {
+      "_id": "64f1a2b3c4d5e6f7g8h9i0j2",
+      "name": "Smartphones",
+      "description": "Mobile phones and smartphones"
+    },
+    "price": 999.99,
+    "rating": 4.5,
+    "reviews": [
+      {
+        "_id": "64f1a2b3c4d5e6f7g8h9i0j3",
+        "user": "John Doe",
+        "rating": 5,
+        "comment": "Excellent phone!",
+        "date": "2024-01-15T10:30:00.000Z"
+      }
+    ],
+    "features": [
+      "A17 Pro chip",
+      "48MP camera",
+      "USB-C port"
+    ],
+    "specifications": {
+      "storage": "128GB",
+      "color": "Natural Titanium",
+      "screen": "6.1 inch"
+    },
+    "inStock": true,
+    "stockQuantity": 50,
+    "shipping": "Free 2-day",
+    "warranty": "1 year",
+    "certifications": [
+      "FCC approved",
+      "CE certified"
+    ],
+    "createdAt": "2024-01-10T08:00:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  }
+]
+```
+
+### Response (500 Internal Server Error)
+```json
+{
+  "message": "Error fetching products",
+  "error": "Database connection failed"
+}
+```
+
+# ========================================
+# GET PRODUCT BY ID
+# ========================================
+GET {{baseUrl}}/64f1a2b3c4d5e6f7g8h9i0j1
+Content-Type: application/json
+
+### Response (200 OK)
+```json
+{
+  "_id": "64f1a2b3c4d5e6f7g8h9i0j1",
+  "name": "iPhone 15 Pro",
+  "description": "Latest iPhone with advanced features",
+  "longDescription": "The iPhone 15 Pro features the most advanced camera system ever on iPhone, A17 Pro chip for incredible performance, and a stunning Super Retina XDR display.",
+  "image": "https://example.com/iphone15pro.jpg",
+  "images": [
+    "https://example.com/iphone15pro-1.jpg",
+    "https://example.com/iphone15pro-2.jpg"
+  ],
+  "category": {
+    "_id": "64f1a2b3c4d5e6f7g8h9i0j2",
+    "name": "Smartphones",
+    "description": "Mobile phones and smartphones"
+  },
+  "price": 999.99,
+  "rating": 4.5,
+  "reviews": [
+    {
+      "_id": "64f1a2b3c4d5e6f7g8h9i0j3",
+      "user": "John Doe",
+      "rating": 5,
+      "comment": "Excellent phone!",
+      "date": "2024-01-15T10:30:00.000Z"
+    }
+  ],
+  "features": [
+    "A17 Pro chip",
+    "48MP camera",
+    "USB-C port"
+  ],
+  "specifications": {
+    "storage": "128GB",
+    "color": "Natural Titanium",
+    "screen": "6.1 inch"
+  },
+  "inStock": true,
+  "stockQuantity": 50,
+  "shipping": "Free 2-day",
+  "warranty": "1 year",
+  "certifications": [
+    "FCC approved",
+    "CE certified"
+  ],
+  "createdAt": "2024-01-10T08:00:00.000Z",
+  "updatedAt": "2024-01-15T10:30:00.000Z"
+}
+```
+
+### Response (404 Not Found)
+```json
+{
+  "message": "Product not found"
+}
+```
+
+### Response (500 Internal Server Error)
+```json
+{
+  "message": "Error fetching product",
+  "error": "Invalid ObjectId format"
+}
+```
+
+# ========================================
+# CREATE NEW PRODUCT
+# ========================================
+POST {{baseUrl}}/
+Content-Type: application/json
+
+### Request Body (All fields optional)
+```json
+{
+  "name": "MacBook Pro M3",
+  "description": "Powerful laptop for professionals",
+  "longDescription": "The MacBook Pro with M3 chip delivers exceptional performance for demanding workflows, with up to 22 hours of battery life and a stunning Liquid Retina XDR display.",
+  "image": "https://example.com/macbook-pro-m3.jpg",
+  "images": [
+    "https://example.com/macbook-pro-m3-1.jpg",
+    "https://example.com/macbook-pro-m3-2.jpg"
+  ],
+  "category": "64f1a2b3c4d5e6f7g8h9i0j4",
+  "price": 1999.99,
+  "features": [
+    "M3 chip",
+    "14-inch display",
+    "16GB RAM"
+  ],
+  "specifications": {
+    "storage": "512GB SSD",
+    "memory": "16GB unified memory",
+    "display": "14-inch Liquid Retina XDR"
+  },
+  "inStock": true,
+  "stockQuantity": 25,
+  "shipping": "Free next-day",
+  "warranty": "1 year AppleCare+",
+  "certifications": [
+    "Energy Star",
+    "EPEAT Gold"
+  ]
+}
+```
+
+### Response (201 Created)
+```json
+{
+  "_id": "64f1a2b3c4d5e6f7g8h9i0j5",
+  "name": "MacBook Pro M3",
+  "description": "Powerful laptop for professionals",
+  "longDescription": "The MacBook Pro with M3 chip delivers exceptional performance for demanding workflows, with up to 22 hours of battery life and a stunning Liquid Retina XDR display.",
+  "image": "https://example.com/macbook-pro-m3.jpg",
+  "images": [
+    "https://example.com/macbook-pro-m3-1.jpg",
+    "https://example.com/macbook-pro-m3-2.jpg"
+  ],
+  "category": "64f1a2b3c4d5e6f7g8h9i0j4",
+  "price": 1999.99,
+  "rating": 0,
+  "reviews": [],
+  "features": [
+    "M3 chip",
+    "14-inch display",
+    "16GB RAM"
+  ],
+  "specifications": {
+    "storage": "512GB SSD",
+    "memory": "16GB unified memory",
+    "display": "14-inch Liquid Retina XDR"
+  },
+  "inStock": true,
+  "stockQuantity": 25,
+  "shipping": "Free next-day",
+  "warranty": "1 year AppleCare+",
+  "certifications": [
+    "Energy Star",
+    "EPEAT Gold"
+  ],
+  "createdAt": "2024-01-15T12:00:00.000Z",
+  "updatedAt": "2024-01-15T12:00:00.000Z"
+}
+```
+
+### Response (400 Bad Request)
+```json
+{
+  "message": "Error creating product",
+  "error": "Validation failed: price: Path `price` (-100) is less than minimum allowed value (0)"
+}
+```
+
+# ========================================
+# UPDATE PRODUCT
+# ========================================
+PUT {{baseUrl}}/64f1a2b3c4d5e6f7g8h9i0j1
+Content-Type: application/json
+
+### Request Body (Partial update)
+```json
+{
+  "price": 899.99,
+  "stockQuantity": 30,
+  "inStock": true
+}
+```
+
+### Response (200 OK)
+```json
+{
+  "_id": "64f1a2b3c4d5e6f7g8h9i0j1",
+  "name": "iPhone 15 Pro",
+  "description": "Latest iPhone with advanced features",
+  "longDescription": "The iPhone 15 Pro features the most advanced camera system ever on iPhone, A17 Pro chip for incredible performance, and a stunning Super Retina XDR display.",
+  "image": "https://example.com/iphone15pro.jpg",
+  "images": [
+    "https://example.com/iphone15pro-1.jpg",
+    "https://example.com/iphone15pro-2.jpg"
+  ],
+  "category": "64f1a2b3c4d5e6f7g8h9i0j2",
+  "price": 899.99,
+  "rating": 4.5,
+  "reviews": [
+    {
+      "_id": "64f1a2b3c4d5e6f7g8h9i0j3",
+      "user": "John Doe",
+      "rating": 5,
+      "comment": "Excellent phone!",
+      "date": "2024-01-15T10:30:00.000Z"
+    }
+  ],
+  "features": [
+    "A17 Pro chip",
+    "48MP camera",
+    "USB-C port"
+  ],
+  "specifications": {
+    "storage": "128GB",
+    "color": "Natural Titanium",
+    "screen": "6.1 inch"
+  },
+  "inStock": true,
+  "stockQuantity": 30,
+  "shipping": "Free 2-day",
+  "warranty": "1 year",
+  "certifications": [
+    "FCC approved",
+    "CE certified"
+  ],
+  "createdAt": "2024-01-10T08:00:00.000Z",
+  "updatedAt": "2024-01-15T13:00:00.000Z"
+}
+```
+
+### Response (404 Not Found)
+```json
+{
+  "message": "Product not found"
+}
+```
+
+### Response (400 Bad Request)
+```json
+{
+  "message": "Error updating product",
+  "error": "Validation failed: price: Path `price` (-50) is less than minimum allowed value (0)"
+}
+```
+
+# ========================================
+# DELETE PRODUCT
+# ========================================
+DELETE {{baseUrl}}/64f1a2b3c4d5e6f7g8h9i0j1
+Content-Type: application/json
+
+### Response (200 OK)
+```json
+{
+  "message": "Product deleted successfully"
+}
+```
+
+### Response (404 Not Found)
+```json
+{
+  "message": "Product not found"
+}
+```
+
+### Response (500 Internal Server Error)
+```json
+{
+  "message": "Error deleting product",
+  "error": "Database operation failed"
+}
+```
+
+# ========================================
+# ADD REVIEW TO PRODUCT
+# ========================================
+POST {{baseUrl}}/64f1a2b3c4d5e6f7g8h9i0j1/reviews
+Content-Type: application/json
+
+### Request Body
+```json
+{
+  "user": "Jane Smith",
+  "rating": 4,
+  "comment": "Great phone, but expensive"
+}
+```
+
+### Response (201 Created)
+```json
+{
+  "_id": "64f1a2b3c4d5e6f7g8h9i0j1",
+  "name": "iPhone 15 Pro",
+  "description": "Latest iPhone with advanced features",
+  "longDescription": "The iPhone 15 Pro features the most advanced camera system ever on iPhone, A17 Pro chip for incredible performance, and a stunning Super Retina XDR display.",
+  "image": "https://example.com/iphone15pro.jpg",
+  "images": [
+    "https://example.com/iphone15pro-1.jpg",
+    "https://example.com/iphone15pro-2.jpg"
+  ],
+  "category": "64f1a2b3c4d5e6f7g8h9i0j2",
+  "price": 999.99,
+  "rating": 4.5,
+  "reviews": [
+    {
+      "_id": "64f1a2b3c4d5e6f7g8h9i0j3",
+      "user": "John Doe",
+      "rating": 5,
+      "comment": "Excellent phone!",
+      "date": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "_id": "64f1a2b3c4d5e6f7g8h9i0j6",
+      "user": "Jane Smith",
+      "rating": 4,
+      "comment": "Great phone, but expensive",
+      "date": "2024-01-15T14:00:00.000Z"
+    }
+  ],
+  "features": [
+    "A17 Pro chip",
+    "48MP camera",
+    "USB-C port"
+  ],
+  "specifications": {
+    "storage": "128GB",
+    "color": "Natural Titanium",
+    "screen": "6.1 inch"
+  },
+  "inStock": true,
+  "stockQuantity": 50,
+  "shipping": "Free 2-day",
+  "warranty": "1 year",
+  "certifications": [
+    "FCC approved",
+    "CE certified"
+  ],
+  "createdAt": "2024-01-10T08:00:00.000Z",
+  "updatedAt": "2024-01-15T14:00:00.000Z"
+}
+```
+
+### Response (400 Bad Request - Missing required fields)
+```json
+{
+  "message": "User and rating are required"
+}
+```
+
+### Response (400 Bad Request - Invalid rating)
+```json
+{
+  "message": "Rating must be between 1 and 5"
+}
+```
+
+### Response (404 Not Found)
+```json
+{
+  "message": "Product not found"
+}
+```
+
+# ========================================
+# GET PRODUCT REVIEWS
+# ========================================
+GET {{baseUrl}}/64f1a2b3c4d5e6f7g8h9i0j1/reviews
+Content-Type: application/json
+
+### Response (200 OK)
+```json
+{
+  "reviews": [
+    {
+      "_id": "64f1a2b3c4d5e6f7g8h9i0j3",
+      "user": "John Doe",
+      "rating": 5,
+      "comment": "Excellent phone!",
+      "date": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "_id": "64f1a2b3c4d5e6f7g8h9i0j6",
+      "user": "Jane Smith",
+      "rating": 4,
+      "comment": "Great phone, but expensive",
+      "date": "2024-01-15T14:00:00.000Z"
+    }
+  ],
+  "averageRating": 4.5,
+  "totalReviews": 2
+}
+```
+
+### Response (404 Not Found)
+```json
+{
+  "message": "Product not found"
+}
+```
+
+### Response (500 Internal Server Error)
+```json
+{
+  "message": "Error fetching reviews",
+  "error": "Database connection failed"
+}
+```
+
+# ========================================
+# NOTES
+# ========================================
+# 
+# 1. All fields in the Product schema are optional
+# 2. Category field expects a valid ObjectId from the Category collection
+# 3. Rating is automatically calculated based on reviews
+# 4. Reviews are stored as subdocuments in the Product collection
+# 5. Timestamps are automatically added (createdAt, updatedAt)
+# 6. Price must be >= 0
+# 7. Rating must be between 0 and 5
+# 8. Stock quantity must be >= 0
+# 9. Review rating must be between 1 and 5
+# 10. User and rating are required when adding a review
+#
+# ========================================
+# ERROR CODES
+# ========================================
+# 200: Success
+# 201: Created
+# 400: Bad Request (validation errors)
+# 404: Not Found
+# 500: Internal Server Error
+#
+# ========================================
+# VALIDATION RULES
+# ========================================
+# - name: String, trimmed
+# - description: String
+# - longDescription: String
+# - image: String
+# - images: Array of strings
+# - category: ObjectId (references Category)
+# - price: Number >= 0
+# - rating: Number 0-5 (auto-calculated)
+# - reviews: Array of review subdocuments
+# - features: Array of strings
+# - specifications: Map of string key-value pairs
+# - inStock: Boolean (default: true)
+# - stockQuantity: Number >= 0 (default: 0)
+# - shipping: String (default: "Standard")
+# - warranty: String (default: "1 year")
+# - certifications: Array of strings

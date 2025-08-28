@@ -4,15 +4,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight, Star, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Product } from "../types";
 import { useProducts } from "../contexts/ProductsContext";
 
 const Products: React.FC = () => {
 	const navigate = useNavigate();
-	const { products } = useProducts();
+	const { products, loading } = useProducts();
 
 	// All hooks must be called before any conditional returns
-	const [loading, setLoading] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [direction, setDirection] = useState(0);
 	const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -105,8 +103,8 @@ const Products: React.FC = () => {
 		}
 	};
 
-	// Now we can have conditional returns after all hooks are called
-	if (loading || products.length === 0) {
+	// Loading state
+	if (loading) {
 		return (
 			<section
 				id='products'
@@ -121,6 +119,8 @@ const Products: React.FC = () => {
 		);
 	}
 
+
+
 	// Don't render if no products
 	if (displayProducts.length === 0) {
 		return (
@@ -133,7 +133,7 @@ const Products: React.FC = () => {
 							No Products Available
 						</h2>
 						<p className='text-gray-600'>
-							Products will appear here once they are added.
+							No products available at the moment.
 						</p>
 					</div>
 				</div>
@@ -270,7 +270,9 @@ const Products: React.FC = () => {
 												<span className='inline-flex items-center space-x-1 sm:space-x-1.5 md:space-x-2 bg-white/95 backdrop-blur-sm text-gray-800 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 lg:px-5 lg:py-3 rounded-lg sm:rounded-xl md:rounded-2xl font-medium border border-white/20 shadow-lg text-xs sm:text-sm md:text-base'>
 													<Star className='w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-teal-600' />
 													<span>
-														{displayProducts[currentIndex]?.category || ""}
+														{typeof displayProducts[currentIndex]?.category === 'string' 
+															? displayProducts[currentIndex]?.category 
+															: displayProducts[currentIndex]?.category?.name || ""}
 													</span>
 												</span>
 											</motion.div>
@@ -329,7 +331,7 @@ const Products: React.FC = () => {
 														whileTap={{ scale: 0.98 }}
 														onClick={() =>
 															navigate(
-																`/product/${displayProducts[currentIndex]?.id}`
+																`/product/${displayProducts[currentIndex]?._id}`
 															)
 														}
 														className='inline-flex items-center justify-center space-x-1.5 sm:space-x-2 md:space-x-3 bg-teal-600 text-white px-3 py-2 xs:px-4 xs:py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl font-semibold hover:bg-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl text-xs xs:text-sm sm:text-base touch-manipulation'>

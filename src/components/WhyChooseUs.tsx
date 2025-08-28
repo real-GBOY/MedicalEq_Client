@@ -1,11 +1,13 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import { Shield, Award, Clock, Users, Zap, Heart } from "lucide-react";
 
 const WhyChooseUs: React.FC = () => {
 	const [counters, setCounters] = useState([0, 0, 0, 0]);
+	const statsRef = useRef<HTMLDivElement | null>(null);
+	const statsInView = useInView(statsRef, { margin: "-100px", amount: 0.3 });
 
 	const stats = [
 		{ label: "Years Experience", value: 15, suffix: "+", icon: Shield },
@@ -35,28 +37,27 @@ const WhyChooseUs: React.FC = () => {
 		},
 	];
 
+	const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
 	const animateCounters = () => {
-		stats.forEach((stat, index) => {
-			let current = 0;
-			const increment = stat.value / 50;
-			const timer = setInterval(() => {
-				current += increment;
-				if (current >= stat.value) {
-					current = stat.value;
-					clearInterval(timer);
-				}
-				setCounters((prev) => {
-					const newCounters = [...prev];
-					newCounters[index] = Math.floor(current);
-					return newCounters;
-				});
-			}, 40);
-		});
+		const durationMs = 1800;
+		const start = performance.now();
+		const frame = (now: number) => {
+			const p = Math.min(1, (now - start) / durationMs);
+			const eased = easeOutCubic(p);
+			setCounters(stats.map((s) => Math.floor(s.value * eased)) as unknown as number[]);
+			if (p < 1) requestAnimationFrame(frame);
+		};
+		requestAnimationFrame(frame);
 	};
 
 	useEffect(() => {
-		animateCounters();
-	}, []);
+		if (statsInView) {
+			animateCounters();
+		} else {
+			setCounters([0, 0, 0, 0]);
+		}
+	}, [statsInView]);
 
 	return (
 		<section id='about' className='py-20 bg-white relative pt-24'>
@@ -80,6 +81,7 @@ const WhyChooseUs: React.FC = () => {
 
 				{/* Stats Counter */}
 				<motion.div
+					ref={statsRef}
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
@@ -92,21 +94,24 @@ const WhyChooseUs: React.FC = () => {
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
 							transition={{ duration: 0.5, delay: index * 0.1 }}
-							whileHover={{ y: -5, scale: 1.02 }}
-							className='bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100'>
-							<div className='text-center'>
-								<div className='inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-emerald-600 text-white rounded-xl mb-4 shadow-lg'>
-									<stat.icon className='h-8 w-8' />
+							whileHover={{ y: -8, scale: 1.03 }}
+							className='relative bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group overflow-hidden'>
+								<div className='pointer-events-none absolute -inset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+									<div className='absolute -top-1/2 left-0 right-0 h-full bg-gradient-to-r from-transparent via-teal-100/60 to-transparent rotate-6 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700' />
 								</div>
-								<div className='text-3xl lg:text-4xl font-bold text-gray-900 mb-2'>
-									{counters[index]}
-									{stat.suffix}
+								<div className='text-center'>
+									<div className='inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-emerald-600 text-white rounded-xl mb-4 shadow-lg ring-0 ring-teal-200/0 group-hover:ring-8 group-hover:ring-teal-50 transition-all duration-300'>
+										<stat.icon className='h-8 w-8 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3' />
+									</div>
+									<div className='text-3xl lg:text-4xl font-bold text-gray-900 mb-2 tabular-nums'>
+										{new Intl.NumberFormat().format(counters[index])}
+										{stat.suffix}
+									</div>
+									<div className='text-gray-600 font-medium text-sm'>
+										{stat.label}
+									</div>
 								</div>
-								<div className='text-gray-600 font-medium text-sm'>
-									{stat.label}
-								</div>
-							</div>
-						</motion.div>
+							</motion.div>
 					))}
 				</motion.div>
 
@@ -119,20 +124,22 @@ const WhyChooseUs: React.FC = () => {
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
 							transition={{ duration: 0.6, delay: index * 0.2 }}
-							whileHover={{ y: -8, scale: 1.02 }}
-							className='bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 group'>
-							<div className='text-center'>
-								<div className='inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300'>
-									<feature.icon className='h-10 w-10' />
+							whileHover={{ y: -10, scale: 1.03 }}
+							className='relative bg-white rounded-xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group overflow-hidden'>
+								<div className='absolute inset-0 rounded-xl pointer-events-none ring-0 ring-transparent group-hover:ring-2 group-hover:ring-teal-500/20 transition-all duration-300' />
+								<div className='pointer-events-none absolute -bottom-10 -right-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
+								<div className='text-center'>
+									<div className='inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl mb-6 shadow-lg group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105'>
+										<feature.icon className='h-10 w-10 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110' />
+									</div>
+									<h3 className='text-xl font-semibold text-gray-900 mb-4'>
+										{feature.title}
+									</h3>
+									<p className='text-gray-600 leading-relaxed'>
+										{feature.description}
+									</p>
 								</div>
-								<h3 className='text-xl font-semibold text-gray-900 mb-4'>
-									{feature.title}
-								</h3>
-								<p className='text-gray-600 leading-relaxed'>
-									{feature.description}
-								</p>
-							</div>
-						</motion.div>
+							</motion.div>
 					))}
 				</div>
 

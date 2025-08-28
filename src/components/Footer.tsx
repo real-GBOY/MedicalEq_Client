@@ -21,9 +21,9 @@ const Footer: React.FC = () => {
 
 	const quickLinks = [
 		{ name: "Home", href: "#home" },
-		{ name: "Products", href: "#products" },
-		{ name: "About Us", href: "#about" },
-		{ name: "Contact", href: "#contact" },
+		{ name: "Products", href: "/products" },
+		{ name: "About Us", href: "/about" },
+		{ name: "Contact", href: "/contact" },
 	];
 
 	// Load products data for footer
@@ -64,7 +64,33 @@ const Footer: React.FC = () => {
 	return (
 		<footer className='bg-gray-900 text-white'>
 			<div className='container mx-auto px-4 sm:px-6 lg:px-8 py-16'>
-				<div className='grid lg:grid-cols-4 gap-8'>
+				<div className='grid lg:grid-cols-5 gap-8'>
+					{/* Vertical Logo Section */}
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ duration: 0.6 }}
+						className='flex flex-col items-center justify-start'>
+						<button
+							type='button'
+							aria-label='Scroll to top'
+							className='group'
+							onClick={() => {
+								const home = document.querySelector('#home');
+								if (home) {
+									home.scrollIntoView({ behavior: 'smooth' });
+								} else {
+									window.scrollTo({ top: 0, behavior: 'smooth' });
+								}
+							}}>
+							<img
+								src='/logo.png'
+								alt='MedEquip Pro Logo'
+								className='h-40 w-40 lg:h-56 lg:w-56 object-cover rounded-xl shadow-xl transition-transform duration-200 group-hover:scale-[1.02]'
+							/>
+						</button>
+					</motion.div>
 					{/* Company Info */}
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
