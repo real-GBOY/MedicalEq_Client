@@ -34,7 +34,7 @@ const Dashboard: React.FC = () => {
 		{ id: "products", label: "Manage Products", icon: Package },
 		{ id: "users", label: "Users", icon: Users },
 		{ id: "settings", label: "Settings", icon: Settings },
-	];
+	]; 
 
 	const renderContent = () => {
 		switch (activeTab) {
