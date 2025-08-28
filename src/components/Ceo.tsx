@@ -43,7 +43,7 @@ const Ceo: React.FC = () => {
 						className='flex justify-center'
 						variants={containerVariants}>
 						<motion.img
-							src='/ceo.jpeg'
+							src='https://i.postimg.cc/QNbcpqNq/ceo.jpg'
 							alt='CEO Portrait'
 							className='w-72 h-72 sm:w-80 sm:h-80 lg:w-[26rem] lg:h-[26rem] object-cover rounded-2xl shadow-2xl border-4 border-[#00796a]/20'
 							whileHover={{ scale: 1.02 }}
@@ -61,7 +61,7 @@ const Ceo: React.FC = () => {
 						<motion.p
 							className='text-[#00796a] font-semibold text-xl sm:text-2xl mb-2'
 							variants={item}>
-							Dr. Sarah Al-Mansouri
+							Dr. Mahmoud Al-Mansouri
 						</motion.p>
 						<motion.p className='text-slate-600 mb-4' variants={item}>
 							20+ years leading innovation in medical devices, healthcare

@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 											whileHover={{ scale: 1.05 }}>
 											<Link to='/'>
 												<img
-													src='/logo.png'
+													src='https://i.postimg.cc/x1bkFGQh/logo.png'
 													alt='MedEquip Pro Logo'
 													className='h-7 w-7 object-cover rounded mr-3'
 												/>
