@@ -18,6 +18,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 interface HeaderProps {
 	isLoginPage?: boolean;
 }
+ 
 
 const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
