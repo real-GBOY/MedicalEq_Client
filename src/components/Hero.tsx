@@ -12,8 +12,8 @@ const Hero: React.FC = () => {
 	const heroImages = React.useMemo(
 		() => [
 			"https://i.postimg.cc/Xv8RK0rM/top-view-world-science-day-arrangement-with-stethoscope-removebg-preview.png",
-			"/hero2.png",
-			"/hero3.png",
+			"https://i.postimg.cc/qvcbn3YV/hero2.png",
+			"https://i.postimg.cc/qqfDyxkr/hero3.png",
 		],
 		[]
 	);
