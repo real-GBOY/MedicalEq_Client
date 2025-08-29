@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Filter, ArrowRight, Heart, Grid3X3, List } from "lucide-react";
 import { Product } from "../types";
 import { useProducts } from "../hooks/useProducts";
@@ -10,6 +10,7 @@ import { toggleFavorite, getFavorites } from "../utils/favorites";
 
 const ProductsPage: React.FC = () => {
 	const navigate = useNavigate();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const { data: apiProducts = [], isLoading: loading, error } = useProducts();
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("All");
@@ -22,6 +23,24 @@ const ProductsPage: React.FC = () => {
 		const currentFavorites = getFavorites();
 		setFavorites(currentFavorites);
 	}, []);
+
+	// Handle URL parameters for category filtering
+	useEffect(() => {
+		const categoryFromUrl = searchParams.get("category");
+		if (categoryFromUrl) {
+			setSelectedCategory(categoryFromUrl);
+		}
+	}, [searchParams]);
+
+	// Update URL when category changes
+	const handleCategoryChange = (category: string) => {
+		setSelectedCategory(category);
+		if (category === "All") {
+			setSearchParams({});
+		} else {
+			setSearchParams({ category });
+		}
+	};
 
 	// Transform API products to local Product format
 	const products = apiProducts.map((product) => ({
@@ -117,7 +136,9 @@ const ProductsPage: React.FC = () => {
 				whileHover={{ y: -8, scale: 1.02 }}
 				onClick={() => navigate(`/product/${product._id}`)}
 				className={`bg-white rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-500 border border-gray-100 cursor-pointer group ${
-					viewMode === "list" ? "flex flex-col sm:flex-row" : "w-full sm:w-80"
+					viewMode === "list"
+						? "flex flex-col sm:flex-row"
+						: "w-full h-full flex flex-col"
 				}`}>
 				<div
 					className={`relative overflow-hidden ${
@@ -126,7 +147,7 @@ const ProductsPage: React.FC = () => {
 					{/* Image Container */}
 					<div
 						className={`relative w-full overflow-hidden ${
-							viewMode === "list" ? "h-48 sm:h-56" : "h-48"
+							viewMode === "list" ? "h-48 sm:h-56" : "h-52 sm:h-56"
 						}`}>
 						<img
 							src={product.image}
@@ -199,55 +220,49 @@ const ProductsPage: React.FC = () => {
 
 				<div
 					className={`${
-						viewMode === "list" ? "p-4 sm:p-6 flex-1" : "p-4 sm:p-5"
+						viewMode === "list"
+							? "p-4 sm:p-6 flex-1"
+							: "p-3 sm:p-4 lg:p-5 flex flex-col h-full"
 					}`}>
 					{/* Product Title */}
-					<div
-						className={`${
-							viewMode === "list" ? "mb-4 sm:mb-5" : "mb-3 sm:mb-4"
-						}`}>
+					<div className={`${viewMode === "list" ? "mb-4 sm:mb-5" : "mb-2"}`}>
 						<h3
 							onClick={() => navigate(`/product/${product._id}`)}
 							className={`${
 								viewMode === "list"
 									? "text-lg sm:text-xl"
-									: "text-base sm:text-lg"
-							} font-bold text-gray-900 leading-tight cursor-pointer hover:text-teal-600 transition-colors duration-300 mb-2 sm:mb-3`}>
+									: "text-base sm:text-lg lg:text-xl"
+							} font-bold text-gray-900 leading-tight cursor-pointer hover:text-teal-600 transition-colors duration-300 mb-2`}>
 							{product.name}
 						</h3>
-
-						{/* Description */}
-						<p className='text-gray-600 text-xs sm:text-sm leading-relaxed line-clamp-2 mb-3 sm:mb-4'>
-							{product.description}
-						</p>
 					</div>
 
 					{/* Features */}
-					<div
-						className={`${
-							viewMode === "list" ? "mb-4 sm:mb-6" : "mb-4 sm:mb-5"
-						}`}>
-						<div className='flex flex-wrap gap-1.5 sm:gap-2'>
-							{product.features.slice(0, 3).map((feature, idx) => (
-								<span
-									key={idx}
-									className='bg-gradient-to-r from-teal-50 to-emerald-50 text-teal-700 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium border border-teal-200 hover:from-teal-100 hover:to-emerald-100 transition-all duration-300 shadow-sm'>
-									{feature}
-								</span>
-							))}
-							{product.features.length > 3 && (
+					<div className={`${viewMode === "list" ? "mb-4 sm:mb-6" : "mb-2"}`}>
+						<div className='flex flex-wrap gap-1.5 sm:gap-2 min-h-[2.5rem]'>
+							{product.features
+								.slice(0, viewMode === "list" ? 4 : 2)
+								.map((feature, idx) => (
+									<span
+										key={idx}
+										className='bg-gradient-to-r from-teal-50 to-emerald-50 text-teal-700 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium border border-teal-200 hover:from-teal-100 hover:to-emerald-100 transition-all duration-300 shadow-sm'>
+										{feature}
+									</span>
+								))}
+							{product.features.length > (viewMode === "list" ? 4 : 2) && (
 								<span className='text-gray-500 text-xs font-medium bg-gray-100 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full hover:bg-gray-200 transition-colors duration-300 shadow-sm'>
-									+{product.features.length - 3} more
+									+{product.features.length - (viewMode === "list" ? 4 : 2)}{" "}
+									more
 								</span>
 							)}
 						</div>
 					</div>
 
 					{/* Price and Action Buttons */}
-					<div className='space-y-3 sm:space-y-4'>
+					<div className='space-y-2 sm:space-y-3 mt-auto'>
 						{/* Price and Details Button Row */}
-						<div className='flex items-center justify-between mb-3 sm:mb-4'>
-							<div className='text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent'>
+						<div className='flex items-center justify-between mb-2 sm:mb-3'>
+							<div className='text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent'>
 								{formatPrice(product.price)}
 							</div>
 							<motion.button
@@ -341,7 +356,7 @@ const ProductsPage: React.FC = () => {
 
 	return (
 		<div className='min-h-screen bg-gradient-to-br from-gray-50 to-white pt-16 sm:pt-20'>
-			<div className='container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8'>
+			<div className='container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl'>
 				{/* Header */}
 				<motion.div
 					initial={{ opacity: 0, y: 30 }}
@@ -386,7 +401,7 @@ const ProductsPage: React.FC = () => {
 							{/* Category Filter */}
 							<select
 								value={selectedCategory}
-								onChange={(e) => setSelectedCategory(e.target.value)}
+								onChange={(e) => handleCategoryChange(e.target.value)}
 								className='w-full sm:w-auto px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white text-sm sm:text-base'>
 								{categories.map((category) => (
 									<option key={category} value={category}>
@@ -440,7 +455,7 @@ const ProductsPage: React.FC = () => {
 					transition={{ duration: 0.6, delay: 0.2 }}
 					className={`${
 						viewMode === "grid"
-							? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+							? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
 							: "grid grid-cols-1 gap-4 sm:gap-6"
 					}`}>
 					<AnimatePresence>
@@ -468,7 +483,7 @@ const ProductsPage: React.FC = () => {
 						<button
 							onClick={() => {
 								setSearchTerm("");
-								setSelectedCategory("All");
+								handleCategoryChange("All");
 								setSortBy("name");
 							}}
 							className='bg-teal-600 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl hover:bg-teal-700 transition-colors duration-300 text-sm sm:text-base'>

@@ -14,6 +14,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 	const [showProductsMenu, setShowProductsMenu] = React.useState(false);
 	const [isScrolled, setIsScrolled] = React.useState(false);
+
 	const { categories } = useCategories();
 	const categoriesList = categories.map((cat) => cat.name);
 	const location = useLocation();
@@ -27,7 +28,24 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
+		
 	}, []);
+
+	// Add click outside handler for products dropdown - only close on explicit close button
+	React.useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (showProductsMenu) {
+				const target = event.target as Element;
+				// Close if clicking outside the products dropdown container
+				if (!target.closest(".products-dropdown-container")) {
+					setShowProductsMenu(false);
+				}
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, [showProductsMenu]);
 
 	const closeMenu = () => setIsMenuOpen(false);
 
@@ -71,11 +89,7 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 				initial={{ y: -100 }}
 				animate={{ y: 0 }}
 				transition={{ duration: 0.6 }}
-				className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-					isScrolled
-						? "bg-white/95 shadow-lg md:bg-white/95"
-						: "bg-white/95 md:bg-transparent"
-				} shadow-sm`}>
+				className='fixed top-0 left-0 right-0 z-40 transition-all duration-300 bg-white/95 md:bg-transparent'>
 				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
 					<div className='flex items-center justify-center h-16 md:h-20 md:mt-10 w-full relative px-16 md:px-0'>
 						{/* Desktop Navigation - Glassy pill-shaped navbar with integrated logo */}
@@ -132,80 +146,117 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 													) : (
 														// Router link with optional dropdown for Products
 														<div
-															className='relative'
-															onMouseEnter={() =>
-																isProducts && setShowProductsMenu(true)
-															}
-															onMouseLeave={() =>
-																isProducts && setShowProductsMenu(false)
-															}>
-															<Link
-																to={item.path}
-																className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
-																	isActive
-																		? "bg-teal-600 text-white shadow-lg"
-																		: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
-																}`}>
-																<IconComponent className='h-4 w-4' />
-																<span className='text-sm font-medium'>
-																	{item.label}
-																</span>
-																{isProducts && (
-																	<svg
-																		className={`h-4 w-4 transition-transform ${
-																			showProductsMenu
-																				? "rotate-180"
-																				: "rotate-0"
-																		}`}
-																		viewBox='0 0 20 20'
-																		fill='currentColor'
-																		aria-hidden='true'>
-																		<path
-																			fillRule='evenodd'
-																			d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z'
-																			clipRule='evenodd'
-																		/>
-																	</svg>
-																)}
-																{isActive && (
-																	<Zap className='h-4 w-4 text-yellow-400 ml-1' />
-																)}
-															</Link>
+															className={`relative ${
+																isProducts ? "products-dropdown-container" : ""
+															}`}>
+															{isProducts ? (
+																<button
+																	onClick={() =>
+																		setShowProductsMenu(!showProductsMenu)
+																	}
+																	className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
+																		isActive
+																			? "bg-teal-600 text-white shadow-lg"
+																			: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
+																	}`}>
+																	<IconComponent className='h-4 w-4' />
+																	<span className='text-sm font-medium'>
+																		{item.label}
+																	</span>
+																	{isProducts && (
+																		<svg
+																			className={`h-4 w-4 transition-transform ${
+																				showProductsMenu
+																					? "rotate-180"
+																					: "rotate-0"
+																			}`}
+																			viewBox='0 0 20 20'
+																			fill='currentColor'
+																			aria-hidden='true'>
+																			<path
+																				fillRule='evenodd'
+																				d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z'
+																				clipRule='evenodd'
+																			/>
+																		</svg>
+																	)}
+																	{isActive && (
+																		<Zap className='h-4 w-4 text-yellow-400 ml-1' />
+																	)}
+																</button>
+															) : (
+																<Link
+																	to={item.path}
+																	className={`relative flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
+																		isActive
+																			? "bg-teal-600 text-white shadow-lg"
+																			: "text-gray-700 hover:text-teal-600 hover:bg-white/40 backdrop-blur-sm"
+																	}`}>
+																	<IconComponent className='h-4 w-4' />
+																	<span className='text-sm font-medium'>
+																		{item.label}
+																	</span>
+																	{isActive && (
+																		<Zap className='h-4 w-4 text-yellow-400 ml-1' />
+																	)}
+																</Link>
+															)}
 															{isProducts && showProductsMenu && (
-																<div
-																	className='absolute left-0 mt-2 w-56 rounded-2xl bg-white/90 backdrop-blur-md border border-white/40 shadow-2xl p-2'
-																	onMouseEnter={() => setShowProductsMenu(true)}
-																	onMouseLeave={() =>
-																		setShowProductsMenu(false)
-																	}>
-																	<div className='px-3 py-2 text-xs font-semibold text-teal-700 uppercase tracking-wide'>
-																		Categories
+																<div className='absolute left-0 mt-1 w-80 rounded-2xl bg-white/95 backdrop-blur-md border border-white/40 shadow-2xl p-4 z-50'>
+																	{/* Header with close button */}
+																	<div className='flex items-center justify-between mb-4'>
+																		<div className='px-2 py-1 text-sm font-semibold text-teal-700 uppercase tracking-wide'>
+																			Select Category
+																		</div>
+																		<button
+																			onClick={() => setShowProductsMenu(false)}
+																			className='close-products-menu p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors'>
+																			<X className='h-4 w-4' />
+																		</button>
 																	</div>
-																	<ul className='max-h-72 overflow-auto'>
+
+																	{/* Categories grid */}
+																	<div className='grid grid-cols-2 gap-3'>
 																		{categoriesList.length > 0 ? (
 																			categoriesList.map((cat) => (
-																				<li key={cat}>
-																					<button
-																						onClick={(e) => {
-																							e.preventDefault();
-																							navigate(
-																								`/products?category=${encodeURIComponent(
-																									cat
-																								)}`
-																							);
-																							setShowProductsMenu(false);
-																						}}
-																						className='w-full text-left px-3 py-2 rounded-xl text-gray-700 hover:bg-teal-50 hover:text-teal-700'>
+																				<button
+																					key={cat}
+																					onClick={(e) => {
+																						e.preventDefault();
+																						navigate(
+																							`/products?category=${encodeURIComponent(
+																								cat
+																							)}`
+																						);
+																						setShowProductsMenu(false);
+																					}}
+																					className='w-full text-left px-4 py-4 rounded-xl text-gray-700 hover:bg-teal-50 hover:text-teal-700 border border-gray-100 hover:border-teal-200 transition-all duration-200 hover:shadow-md'>
+																					<div className='font-medium text-sm'>
 																						{cat}
-																					</button>
-																				</li>
+																					</div>
+																					<div className='text-xs text-gray-500 mt-1'>
+																						View products
+																					</div>
+																				</button>
 																			))
 																		) : (
-																			<li className='px-3 py-2 text-gray-500 text-sm'>
+																			<div className='col-span-2 px-4 py-8 text-center text-gray-500'>
 																				No categories available
-																			</li>
+																			</div>
 																		)}
-																	</ul>
+																	</div>
+
+																	{/* All Products button */}
+																	<div className='mt-4 pt-3 border-t border-gray-100'>
+																		<button
+																			onClick={() => {
+																				navigate("/products");
+																				setShowProductsMenu(false);
+																			}}
+																			className='w-full px-4 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors font-medium'>
+																			View All Products
+																		</button>
+																	</div>
 																</div>
 															)}
 														</div>
@@ -217,7 +268,6 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 								</div>
 							)}
 						</nav>
-
 						{/* Mobile left logo */}
 						<Link
 							to='/'
@@ -241,7 +291,6 @@ const Header: React.FC<HeaderProps> = ({ isLoginPage = false }) => {
 								</span>
 							</motion.div>
 						</Link>
-
 						{/* Mobile Menu Button - Positioned absolutely on the right */}
 						<button
 							onClick={() => setIsMenuOpen(!isMenuOpen)}
