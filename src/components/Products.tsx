@@ -108,11 +108,11 @@ const Products: React.FC = () => {
 		return (
 			<section
 				id='products'
-				className='py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 bg-gradient-to-br relative overflow-hidden pb-16 sm:pb-20 md:pb-24'>
-				<div className='container mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
-					<div className='text-center py-16 sm:py-20'>
-						<div className='animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-teal-600 mx-auto mb-4'></div>
-						<p className='text-gray-600 text-sm sm:text-base'>Loading products...</p>
+				className='py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-br relative overflow-hidden pb-24'>
+				<div className='container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10'>
+					<div className='text-center py-20'>
+						<div className='animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600 mx-auto mb-4'></div>
+						<p className='text-gray-600'>Loading products...</p>
 					</div>
 				</div>
 			</section>
@@ -124,13 +124,13 @@ const Products: React.FC = () => {
 		return (
 			<section
 				id='products'
-				className='relative py-8 sm:py-12 md:py-16 lg:py-20 xl:py-24 overflow-hidden'>
+				className='relative py-12 sm:py-16 md:py-20 lg:py-24 xl:py-28 2xl:py-32 overflow-hidden'>
 				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
 					<div className='text-center'>
-						<h2 className='text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4'>
+						<h2 className='text-2xl font-bold text-gray-900 mb-4'>
 							No Products Available
 						</h2>
-						<p className='text-sm sm:text-base text-gray-600'>
+						<p className='text-gray-600'>
 							No products available at the moment.
 						</p>
 					</div>
@@ -142,15 +142,15 @@ const Products: React.FC = () => {
 	return (
 		<section
 			id='products'
-			className='py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 bg-gradient-to-br relative overflow-hidden pb-16 sm:pb-20 md:pb-24'>
-			<div className='container mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
-				{/* Enhanced Header - Mobile First */}
+			className='py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-br relative overflow-hidden pb-24'>
+			<div className='container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10'>
+				{/* Enhanced Header - Mobile Optimized */}
 				<motion.div
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
 					transition={{ duration: 1, ease: "easeOut" }}
-					className='text-center mb-6 sm:mb-8 md:mb-12 lg:mb-16'>
+					className='text-center mb-8 sm:mb-12 md:mb-16'>
 					<motion.div
 						initial={{ opacity: 0, scale: 0.5 }}
 						whileInView={{ opacity: 1, scale: 1 }}
@@ -163,7 +163,7 @@ const Products: React.FC = () => {
 						</span>
 					</motion.div>
 
-					<h2 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-light text-gray-900 mb-3 sm:mb-4 md:mb-6 px-2 leading-tight'>
+					<h2 className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light text-gray-900 mb-3 sm:mb-4 md:mb-6 px-2'>
 						Featured
 						<span className='block font-semibold text-teal-600 mt-1'>
 							Products
@@ -180,8 +180,8 @@ const Products: React.FC = () => {
 				<div className='relative max-w-7xl mx-auto'>
 					{/* Enhanced Slider with Touch Support */}
 					<div
-						className='relative h-[280px] xs:h-[320px] sm:h-[400px] 
-						md:h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[700px] overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg sm:shadow-xl lg:shadow-2xl'
+						className='relative h-[420px] xs:h-[450px] sm:h-[500px] 
+						md:h-[550px] lg:h-[600px] xl:h-[700px] overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg sm:shadow-xl lg:shadow-2xl'
 						onTouchStart={onTouchStart}
 						onTouchMove={onTouchMove}
 						onTouchEnd={onTouchEnd}>
@@ -190,7 +190,7 @@ const Products: React.FC = () => {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={() => paginate(-1)}
-							className='hidden sm:flex absolute left-2 sm:left-3 md:left-4 lg:left-5 xl:left-6 top-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-white/95 backdrop-blur-sm rounded-full items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 group touch-manipulation px-1 sm:px-2 md:px-3'>
+							className='hidden sm:flex absolute left-3 sm:left-4 md:left-5 lg:left-6 top-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-white/95 backdrop-blur-sm rounded-full items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 group touch-manipulation px-1 sm:px-2 md:px-3'>
 							<ChevronLeft className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-gray-700 group-hover:text-teal-600 transition-colors' />
 						</motion.button>
 
@@ -198,7 +198,7 @@ const Products: React.FC = () => {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={() => paginate(1)}
-							className='hidden sm:flex absolute right-2 sm:right-3 md:right-4 lg:right-5 xl:right-6 top-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-white/95 backdrop-blur-sm rounded-full items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 group touch-manipulation px-1 sm:px-2 md:px-3'>
+							className='hidden sm:flex absolute right-3 sm:right-4 md:right-5 lg:right-6 top-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-white/95 backdrop-blur-sm rounded-full items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 group touch-manipulation px-1 sm:px-2 md:px-3'>
 							<ChevronRight className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-gray-700 group-hover:text-teal-600 transition-colors' />
 						</motion.button>
 
@@ -218,9 +218,9 @@ const Products: React.FC = () => {
 								className='absolute inset-0 z-10'>
 								<div className='relative h-full bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden'>
 									{/* Mobile-First Grid Layout */}
-									<div className='flex flex-col lg:grid lg:grid-cols-2 h-full'>
+									<div className='flex flex-col lg:grid lg:grid-cols-2 h-full min-h-full'>
 										{/* Product Image - Mobile Priority */}
-										<div className='relative overflow-hidden h-[140px] xs:h-[160px] sm:h-[180px] md:h-[200px] lg:h-full order-1 lg:order-1'>
+										<div className='relative overflow-hidden h-[200px] xs:h-[220px] sm:h-[240px] md:h-[260px] lg:h-full order-1 lg:order-1'>
 											{/* Image Container with Better Loading */}
 											<div className='relative w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 group'>
 												<motion.img
@@ -246,8 +246,8 @@ const Products: React.FC = () => {
 												{/* Mobile-Optimized Fallback */}
 												<div className='absolute inset-0 flex items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
 													<div className='text-center'>
-														<div className='w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 mx-auto mb-2 sm:mb-3 bg-teal-100 rounded-full flex items-center justify-center'>
-															<Zap className='w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-teal-600' />
+														<div className='w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-3 bg-teal-100 rounded-full flex items-center justify-center'>
+															<Zap className='w-6 h-6 sm:w-8 sm:h-8 text-teal-600' />
 														</div>
 														<p className='text-teal-700 font-medium text-xs sm:text-sm'>
 															Medical Equipment
@@ -268,62 +268,50 @@ const Products: React.FC = () => {
 												<span className='inline-flex items-center space-x-1 sm:space-x-1.5 md:space-x-2 bg-white/95 backdrop-blur-sm text-gray-800 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 lg:px-5 lg:py-3 rounded-lg sm:rounded-xl md:rounded-2xl font-medium border border-white/20 shadow-lg text-xs sm:text-sm md:text-base'>
 													<Star className='w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-teal-600' />
 													<span>
-														{typeof displayProducts[currentIndex]?.category === 'string' 
-															? displayProducts[currentIndex]?.category 
-															: displayProducts[currentIndex]?.category?.name || ""}
+														{typeof displayProducts[currentIndex]?.category ===
+														"string"
+															? displayProducts[currentIndex]?.category
+															: displayProducts[currentIndex]?.category?.name ||
+															  ""}
 													</span>
 												</span>
 											</motion.div>
 										</div>
 
-										{/* Product Info - Mobile Optimized */}
-										<div className='flex-1 flex items-center p-3 xs:p-4 sm:p-5 md:p-6 lg:p-8 xl:p-10 2xl:p-12 bg-gradient-to-br from-gray-50 to-white order-2 lg:order-2'>
+										{/* Product Info - Simplified and Fixed Height */}
+										<div className='flex-1 flex items-start p-3 xs:p-4 sm:p-5 md:p-6 lg:p-8 xl:p-12 2xl:p-16 bg-gradient-to-br from-gray-50 to-white order-2 lg:order-2'>
 											<motion.div
 												initial={{ opacity: 0, x: 20 }}
 												animate={{ opacity: 1, x: 0 }}
 												transition={{ delay: 0.3, duration: 0.8 }}
-												className='w-full'>
-												{/* Mobile-First Product Title */}
-												<motion.h3
-													initial={{ opacity: 0, y: 15 }}
-													animate={{ opacity: 1, y: 0 }}
-													transition={{ delay: 0.4 }}
-													className='text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-gray-900 mb-2 sm:mb-3 md:mb-4 lg:mb-6 leading-tight'>
-													{displayProducts[currentIndex]?.name || ""}
-												</motion.h3>
+												className='w-full h-full flex flex-col justify-between'>
+												{/* Content Section */}
+												<div className='flex-1'>
+													{/* Product Title */}
+													<motion.h3
+														initial={{ opacity: 0, y: 15 }}
+														animate={{ opacity: 1, y: 0 }}
+														transition={{ delay: 0.4 }}
+														className='text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-gray-900 mb-2 sm:mb-3 md:mb-4 lg:mb-6 leading-tight line-clamp-2'>
+														{displayProducts[currentIndex]?.name || ""}
+													</motion.h3>
 
-												{/* Responsive Product Description */}
-												<motion.p
-													initial={{ opacity: 0, y: 15 }}
-													animate={{ opacity: 1, y: 0 }}
-													transition={{ delay: 0.5 }}
-													className='text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 mb-3 sm:mb-4 md:mb-6 lg:mb-8 leading-relaxed line-clamp-2 sm:line-clamp-3 md:line-clamp-none'>
-													{displayProducts[currentIndex]?.description || ""}
-												</motion.p>
+													{/* Product Description */}
+													<motion.p
+														initial={{ opacity: 0, y: 15 }}
+														animate={{ opacity: 1, y: 0 }}
+														transition={{ delay: 0.5 }}
+														className='text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 mb-4 sm:mb-6 md:mb-8 lg:mb-10 leading-relaxed line-clamp-3'>
+														{displayProducts[currentIndex]?.description || ""}
+													</motion.p>
+												</div>
 
-												{/* Mobile-Optimized Feature Pills */}
-												<motion.div
-													initial={{ opacity: 0, y: 15 }}
-													animate={{ opacity: 1, y: 0 }}
-													transition={{ delay: 0.6 }}
-													className='flex flex-wrap gap-1.5 sm:gap-2 md:gap-3 mb-4 sm:mb-6 md:mb-8 lg:mb-10'>
-													<span className='px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-teal-100 text-teal-700 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap'>
-														AI-Enhanced
-													</span>
-													<span className='px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap'>
-														High-Resolution
-													</span>
-													<span className='px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-emerald-100 text-emerald-700 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap'>
-														FDA Approved
-													</span>
-												</motion.div>
-
-												{/* Mobile-First CTA Buttons */}
+												{/* CTA Buttons - Always at Bottom */}
 												<motion.div
 													initial={{ opacity: 0, y: 15 }}
 													animate={{ opacity: 1, y: 0 }}
 													transition={{ delay: 0.7 }}
-													className='flex flex-col xs:flex-row gap-2 sm:gap-3 md:gap-4'>
+													className='flex flex-col xs:flex-row gap-2 sm:gap-3 md:gap-4 mt-auto'>
 													<motion.button
 														whileHover={{ scale: 1.02, y: -1 }}
 														whileTap={{ scale: 0.98 }}
@@ -362,7 +350,7 @@ const Products: React.FC = () => {
 								onClick={() => goToSlide(index)}
 								className={`relative transition-all duration-300 touch-manipulation ${
 									index === currentIndex
-										? "w-5 h-1.5 sm:w-6 sm:h-2 md:w-8 md:h-2 lg:w-12 md:h-3 lg:h-3"
+										? "w-6 h-2 sm:w-8 sm:h-2 md:w-12 md:h-3 lg:w-16 lg:h-3"
 										: "w-2 h-2 sm:w-3 sm:h-3"
 								}`}>
 								<div
@@ -389,7 +377,7 @@ const Products: React.FC = () => {
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true }}
 					transition={{ duration: 0.8, delay: 0.4 }}
-					className='text-center mt-6 sm:mt-8 md:mt-12 lg:mt-16 xl:mt-20'>
+					className='text-center mt-8 sm:mt-12 md:mt-16 lg:mt-20'>
 					<motion.button
 						whileHover={{ scale: 1.02, y: -2 }}
 						whileTap={{ scale: 0.98 }}
