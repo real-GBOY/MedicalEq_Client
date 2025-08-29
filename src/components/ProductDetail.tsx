@@ -31,7 +31,7 @@ const ProductDetail: React.FC = () => {
 	const [newReview, setNewReview] = useState({
 		rating: 5,
 		comment: "",
-		user: "Anonymous User"
+		user: "Anonymous User",
 	});
 
 	// Load product data
@@ -43,28 +43,28 @@ const ProductDetail: React.FC = () => {
 			try {
 				const productData = await productApi.getProductById(id);
 				setProduct(productData);
-				
+
 				// Load reviews
 				const reviewsData = await productApi.getProductReviews(id);
 				setReviews(reviewsData.reviews);
 				setAverageRating(reviewsData.averageRating);
 				setTotalReviews(reviewsData.totalReviews);
-				
+
 				// Reset selected image to 0 when product changes
 				setSelectedImage(0);
-				
+
 				// Get related products from the same category
 				const allProducts = await productApi.getAllProducts();
-				const categoryName = typeof productData.category === 'string' 
-					? productData.category 
-					: productData.category.name;
+				const categoryName =
+					typeof productData.category === "string"
+						? productData.category
+						: productData.category.name;
 				const related = allProducts
-					.filter(
-						(p) => {
-							const pCategory = typeof p.category === 'string' ? p.category : p.category.name;
-							return pCategory === categoryName && p._id !== productData._id;
-						}
-					)
+					.filter((p) => {
+						const pCategory =
+							typeof p.category === "string" ? p.category : p.category.name;
+						return pCategory === categoryName && p._id !== productData._id;
+					})
 					.slice(0, 4);
 				setRelatedProducts(related);
 			} catch (error) {
@@ -80,14 +80,16 @@ const ProductDetail: React.FC = () => {
 	// Loading state
 	if (loading) {
 		return (
-			<div className='container mx-auto px-6 py-20 text-center'>
+			<div className='container mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center'>
 				<motion.div
 					initial={{ opacity: 0, y: 30 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6 }}
 					className='mb-4'>
-					<div className='animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600 mx-auto mb-4'></div>
-					<p className='text-gray-600'>Loading product...</p>
+					<div className='animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-teal-600 mx-auto mb-4'></div>
+					<p className='text-gray-600 text-sm sm:text-base'>
+						Loading product...
+					</p>
 				</motion.div>
 			</div>
 		);
@@ -96,21 +98,21 @@ const ProductDetail: React.FC = () => {
 	// Product not found state
 	if (!product) {
 		return (
-			<div className='container mx-auto px-6 py-20 text-center'>
+			<div className='container mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center'>
 				<motion.div
 					initial={{ opacity: 0, y: 30 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6 }}
 					className='mb-4'>
-					<h2 className='text-3xl md:text-4xl font-light text-gray-900 mb-4'>
+					<h2 className='text-2xl sm:text-3xl md:text-4xl font-light text-gray-900 mb-3 sm:mb-4'>
 						Product Not Found
 					</h2>
-					<p className='text-gray-600 mb-6'>
+					<p className='text-sm sm:text-base text-gray-600 mb-4 sm:mb-6'>
 						The product you're looking for doesn't exist.
 					</p>
 					<button
 						onClick={() => navigate("/products")}
-						className='inline-flex items-center space-x-2 bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors'>
+						className='inline-flex items-center space-x-2 bg-teal-600 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors text-sm sm:text-base'>
 						<ArrowLeft className='w-4 h-4' />
 						<span>Return to Products</span>
 					</button>
@@ -125,12 +127,16 @@ const ProductDetail: React.FC = () => {
 	};
 
 	// Helper function to get category name
-	const getCategoryName = (category: string | { _id: string; name: string; description?: string }) => {
-		return typeof category === 'string' ? category : category.name;
+	const getCategoryName = (
+		category: string | { _id: string; name: string; description?: string }
+	) => {
+		return typeof category === "string" ? category : category.name;
 	};
 
 	// Helper function to get category display text
-	const getCategoryDisplayText = (category: string | { _id: string; name: string; description?: string }) => {
+	const getCategoryDisplayText = (
+		category: string | { _id: string; name: string; description?: string }
+	) => {
 		const categoryName = getCategoryName(category);
 		return categoryName.split(" ")[0];
 	};
@@ -142,7 +148,7 @@ const ProductDetail: React.FC = () => {
 			await productApi.addReview(id!, {
 				user: newReview.user,
 				rating: newReview.rating,
-				comment: newReview.comment
+				comment: newReview.comment,
 			});
 
 			// Reload reviews
@@ -155,7 +161,7 @@ const ProductDetail: React.FC = () => {
 			setNewReview({
 				rating: 5,
 				comment: "",
-				user: "Anonymous User"
+				user: "Anonymous User",
 			});
 		} catch (error) {
 			console.error("Error adding review:", error);
@@ -165,7 +171,7 @@ const ProductDetail: React.FC = () => {
 
 	return (
 		<div className='min-h-screen bg-gradient-to-br from-gray-50 to-white'>
-			<div className='container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-6 sm:py-8 lg:py-12 pt-16 sm:pt-20 lg:pt-24'>
+			<div className='container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 pt-16 sm:pt-20 lg:pt-24'>
 				{/* Back Button */}
 				<motion.div
 					initial={{ opacity: 0, y: -20 }}
@@ -202,7 +208,9 @@ const ProductDetail: React.FC = () => {
 							<div className='absolute top-2 sm:top-4 left-2 sm:left-4'>
 								<span className='inline-flex items-center space-x-1 sm:space-x-2 bg-white/95 backdrop-blur-sm text-gray-800 px-2 sm:px-3 py-1.5 rounded-lg font-medium border border-white/20 shadow-lg text-xs sm:text-sm'>
 									<Zap className='w-3 h-3 sm:w-4 sm:h-4 text-teal-600' />
-									<span className='hidden sm:inline'>{getCategoryName(product.category)}</span>
+									<span className='hidden sm:inline'>
+										{getCategoryName(product.category)}
+									</span>
 									<span className='sm:hidden'>
 										{getCategoryDisplayText(product.category)}
 									</span>
@@ -351,14 +359,18 @@ const ProductDetail: React.FC = () => {
 								Customer Reviews ({totalReviews})
 							</h3>
 							{reviews.length === 0 ? (
-								<p className='text-gray-600 text-sm'>No reviews yet. Be the first to leave one!</p>
+								<p className='text-gray-600 text-sm'>
+									No reviews yet. Be the first to leave one!
+								</p>
 							) : (
 								<div className='space-y-3'>
 									{reviews.slice(0, 3).map((review, index) => (
 										<div key={index} className='bg-gray-50 p-3 rounded-lg'>
 											<div className='flex items-center space-x-2 mb-2'>
 												<User className='w-4 h-4 text-gray-600' />
-												<span className='font-semibold text-gray-800 text-sm'>{review.user}</span>
+												<span className='font-semibold text-gray-800 text-sm'>
+													{review.user}
+												</span>
 												<span className='text-gray-500 text-xs'>
 													<Calendar className='w-3 h-3 inline-block mr-1' />
 													{new Date(review.date).toLocaleDateString()}
@@ -394,7 +406,9 @@ const ProductDetail: React.FC = () => {
 
 							{/* Add Review Form */}
 							<div className='pt-4 border-t border-gray-200'>
-								<h4 className='text-base font-semibold text-gray-900 mb-3'>Leave a Review</h4>
+								<h4 className='text-base font-semibold text-gray-900 mb-3'>
+									Leave a Review
+								</h4>
 								<div className='flex items-center space-x-2 mb-3'>
 									{[...Array(5)].map((_, i) => (
 										<Star
@@ -404,7 +418,9 @@ const ProductDetail: React.FC = () => {
 													? "text-yellow-400 fill-current"
 													: "text-gray-300"
 											}`}
-											onClick={() => setNewReview({ ...newReview, rating: i + 1 })}
+											onClick={() =>
+												setNewReview({ ...newReview, rating: i + 1 })
+											}
 										/>
 									))}
 								</div>
@@ -413,7 +429,9 @@ const ProductDetail: React.FC = () => {
 									className='w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm'
 									placeholder='Write your review here...'
 									value={newReview.comment}
-									onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+									onChange={(e) =>
+										setNewReview({ ...newReview, comment: e.target.value })
+									}
 								/>
 								<button
 									onClick={handleAddReview}

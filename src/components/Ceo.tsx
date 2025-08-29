@@ -9,7 +9,7 @@ const Ceo: React.FC = () => {
 		visible: {
 			opacity: 1,
 			y: 0,
-			transition: { duration: 0.6, ease: "easeOut" },
+			transition: { duration: 0.6, ease: "easeOut" as const },
 		},
 	};
 
@@ -22,7 +22,11 @@ const Ceo: React.FC = () => {
 
 	const item = {
 		hidden: { opacity: 0, y: 16 },
-		visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+		visible: {
+			opacity: 1,
+			y: 0,
+			transition: { duration: 0.5, ease: "easeOut" as const },
+		},
 	};
 
 	return (
@@ -35,9 +39,11 @@ const Ceo: React.FC = () => {
 					whileInView='visible'
 					viewport={{ once: true, amount: 0.2 }}>
 					{/* CEO Photo */}
-					<motion.div className='flex justify-center' variants={containerVariants}>
+					<motion.div
+						className='flex justify-center'
+						variants={containerVariants}>
 						<motion.img
-							src='/ceo.jpeg'
+							src='https://i.postimg.cc/QNbcpqNq/ceo.jpg'
 							alt='CEO Portrait'
 							className='w-72 h-72 sm:w-80 sm:h-80 lg:w-[26rem] lg:h-[26rem] object-cover rounded-2xl shadow-2xl border-4 border-[#00796a]/20'
 							whileHover={{ scale: 1.02 }}
@@ -47,21 +53,27 @@ const Ceo: React.FC = () => {
 
 					{/* CEO Info */}
 					<motion.div variants={containerVariants}>
-						<motion.h2 className='text-3xl sm:text-4xl font-bold text-[#0f172a] mb-4' variants={item}>
+						<motion.h2
+							className='text-3xl sm:text-4xl font-bold text-[#0f172a] mb-4'
+							variants={item}>
 							Meet Our CEO
 						</motion.h2>
-						<motion.p className='text-[#00796a] font-semibold text-xl sm:text-2xl mb-2' variants={item}>
-							Dr. Sarah Al-Mansouri
+						<motion.p
+							className='text-[#00796a] font-semibold text-xl sm:text-2xl mb-2'
+							variants={item}>
+							Dr. Mahmoud Al-Mansouri
 						</motion.p>
 						<motion.p className='text-slate-600 mb-4' variants={item}>
-							20+ years leading innovation in medical devices, healthcare operations,
-							and patient-centric solutions across global markets.
+							20+ years leading innovation in medical devices, healthcare
+							operations, and patient-centric solutions across global markets.
 						</motion.p>
-						<motion.p className='text-slate-600 leading-relaxed' variants={item}>
-							With a background in biomedical engineering and hospital management,
-							Sarah has built world-class teams to deliver safe, reliable, and
-							cutting-edge medical equipment that empowers clinicians and elevates
-							patient outcomes.
+						<motion.p
+							className='text-slate-600 leading-relaxed'
+							variants={item}>
+							With a background in biomedical engineering and hospital
+							management, Sarah has built world-class teams to deliver safe,
+							reliable, and cutting-edge medical equipment that empowers
+							clinicians and elevates patient outcomes.
 						</motion.p>
 
 						{/* Secondary profile */}
@@ -71,15 +83,15 @@ const Ceo: React.FC = () => {
 							whileHover={{ scale: 1.01 }}
 							transition={{ type: "spring", stiffness: 220, damping: 16 }}>
 							<img
-								src='/ceo.jpeg'
+								src='https://i.postimg.cc/QNbcpqNq/ceo.jpg'
 								alt='Deputy CEO'
 								className='w-16 h-16 rounded-full object-cover border-2 border-[#00796a]/30'
 							/>
 							<div>
-								<p className='text-slate-800 font-semibold'>
-									Eng. Omar Haddad
+								<p className='text-slate-800 font-semibold'>Eng. Omar Haddad</p>
+								<p className='text-slate-500 text-sm'>
+									Chief Operations Officer
 								</p>
-								<p className='text-slate-500 text-sm'>Chief Operations Officer</p>
 							</div>
 						</motion.div>
 					</motion.div>

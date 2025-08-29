@@ -85,7 +85,7 @@ const Footer: React.FC = () => {
 								}
 							}}>
 							<img
-								src='/logo.png'
+								src='https://i.postimg.cc/x1bkFGQh/logo.png'
 								alt='MedEquip Pro Logo'
 								className='h-40 w-40 lg:h-56 lg:w-56 object-cover rounded-xl shadow-xl transition-transform duration-200 group-hover:scale-[1.02]'
 							/>

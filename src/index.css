@@ -53,6 +53,41 @@
 	::-webkit-scrollbar-thumb:hover {
 		background: #059669;
 	}
+
+	/* Touch-friendly interactions */
+	.touch-manipulation {
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	/* Line clamp utilities */
+	.line-clamp-1 {
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 1;
+	}
+
+	.line-clamp-2 {
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.line-clamp-3 {
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+	}
+
+	.line-clamp-none {
+		overflow: visible;
+		display: block;
+		-webkit-box-orient: unset;
+		-webkit-line-clamp: unset;
+	}
 }
 
 @layer utilities {
@@ -66,5 +101,47 @@
 
 	.lg\:ml-70 {
 		margin-left: 17.5rem; /* 280px */
+	}
+
+	/* Responsive text utilities */
+	.text-responsive-xs {
+		font-size: 0.75rem; /* 12px */
+	}
+
+	.text-responsive-sm {
+		font-size: 0.875rem; /* 14px */
+	}
+
+	.text-responsive-base {
+		font-size: 1rem; /* 16px */
+	}
+
+	.text-responsive-lg {
+		font-size: 1.125rem; /* 18px */
+	}
+
+	.text-responsive-xl {
+		font-size: 1.25rem; /* 20px */
+	}
+
+	/* Mobile-first spacing utilities */
+	.mobile-padding {
+		padding: 1rem;
+	}
+
+	.sm\:mobile-padding {
+		padding: 1.5rem;
+	}
+
+	.md\:mobile-padding {
+		padding: 2rem;
+	}
+
+	.lg\:mobile-padding {
+		padding: 2.5rem;
+	}
+
+	.xl\:mobile-padding {
+		padding: 3rem;
 	}
 }
