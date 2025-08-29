@@ -117,7 +117,7 @@ const ProductsPage: React.FC = () => {
 				whileHover={{ y: -8, scale: 1.02 }}
 				onClick={() => navigate(`/product/${product._id}`)}
 				className={`bg-white rounded-3xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-500 border border-gray-100 cursor-pointer group ${
-					viewMode === "list" ? "flex" : "w-80"
+					viewMode === "list" ? "flex" : "flex flex-col min-h-[500px]"
 				}`}>
 				<div
 					className={`relative overflow-hidden ${
@@ -180,9 +180,12 @@ const ProductsPage: React.FC = () => {
 					</div>
 				</div>
 
-				<div className={`${viewMode === "list" ? "p-6 flex-1" : "p-5"}`}>
-					{/* Product Title */}
-					<div className={`${viewMode === "list" ? "mb-5" : "mb-4"}`}>
+				<div className={`${viewMode === "list" ? "p-6 flex-1" : "p-5"} flex flex-col h-full`}>
+
+					{/* Content Area - Takes up available space */}
+					<div className='flex-1'>
+						{/* Product Title */}
+						<div className={`${viewMode === "list" ? "mb-5" : "mb-4"}`}>
 						<h3 
 							onClick={() => navigate(`/product/${product._id}`)}
 							className={`${viewMode === "list" ? "text-xl" : "text-lg"} font-bold text-gray-900 leading-tight cursor-pointer hover:text-teal-600 transition-colors duration-300 mb-3`}>
@@ -212,9 +215,10 @@ const ProductsPage: React.FC = () => {
 							)}
 						</div>
 					</div>
+					</div>
 
-					{/* Price and Action Buttons */}
-					<div className='space-y-4'>
+					{/* Price and Action Buttons - Sticks to bottom */}
+					<div className='space-y-4 mt-auto'>
 						{/* Price and Details Button Row */}
 						<div className='flex items-center justify-between mb-4'>
 							<div className='text-2xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent'>
@@ -389,7 +393,7 @@ const ProductsPage: React.FC = () => {
 					transition={{ duration: 0.6, delay: 0.2 }}
 					className={`${
 						viewMode === "grid"
-							? "flex gap-6 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+							? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
 							: "grid grid-cols-1 gap-6"
 					}`}>
 					<AnimatePresence>
