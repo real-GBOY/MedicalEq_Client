@@ -216,13 +216,13 @@ const ProductsPage: React.FC = () => {
 					</div>
 				</div>
 
-				<div className={`${viewMode === "list" ? "p-6 flex-1" : "p-5"} flex flex-col h-full`}>
-
-					{/* Content Area - Takes up available space */}
-					<div className='flex-1'>
-						{/* Product Title */}
-						<div className={`${viewMode === "list" ? "mb-5" : "mb-4"}`}>
-						<h3 
+				<div
+					className={`${
+						viewMode === "list" ? "p-6 flex-1" : "p-5"
+					} flex flex-col justify-between`}>
+					{/* Product Title */}
+					<div className={`${viewMode === "list" ? "mb-5" : "mb-4"}`}>
+						<h3
 							onClick={() => navigate(`/product/${product._id}`)}
 							className={`${
 								viewMode === "list"
@@ -231,6 +231,11 @@ const ProductsPage: React.FC = () => {
 							} font-bold text-gray-900 leading-tight cursor-pointer hover:text-teal-600 transition-colors duration-300 mb-2`}>
 							{product.name}
 						</h3>
+
+						{/* Description */}
+						<p className='text-gray-600 text-sm leading-relaxed line-clamp-2 mb-4'>
+							{product.description}
+						</p>
 					</div>
 
 					{/* Features */}
@@ -253,10 +258,9 @@ const ProductsPage: React.FC = () => {
 							)}
 						</div>
 					</div>
-					</div>
 
 					{/* Price and Action Buttons - Sticks to bottom */}
-					<div className='space-y-4 mt-auto'>
+					<div className='space-y-4'>
 						{/* Price and Details Button Row */}
 						<div className='flex items-center justify-between mb-2 sm:mb-3'>
 							<div className='text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent'>
